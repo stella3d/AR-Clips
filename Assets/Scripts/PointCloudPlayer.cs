@@ -4,7 +4,7 @@ using System.IO;
 
 public class PointCloudPlayer : MonoBehaviour 
 {
-  const int MAX_POINT_COUNT = 61440;
+  const int MAX_POINT_COUNT = 15360;
 
   public Mesh m_Mesh;
 
@@ -15,20 +15,18 @@ public class PointCloudPlayer : MonoBehaviour
   double m_LastPointCloudTimestamp;
 
   public int m_FrameIndex;
-  public int frameSkip = 10;
+  public int frameSkip = 1;
+  public int pointCount;
 
-  FileStream file;
-  StreamWriter stream;
-
+  FileStream m_File;
   BinaryReader m_BinaryReader;
 
   int[] m_Indices = new int[MAX_POINT_COUNT];
 
   void Start () 
   {
-    file = new FileStream("Assets/pointcloud.json", FileMode.Open);
-    //stream = new StreamWriter(file);
-    m_BinaryReader = new BinaryReader(file);
+    m_File = new FileStream("Assets/pointcloud.json", FileMode.Open);
+    m_BinaryReader = new BinaryReader(m_File);
 
     //m_Mesh = GetComponent<MeshFilter>().mesh;
     m_Mesh.Clear();
@@ -36,7 +34,7 @@ public class PointCloudPlayer : MonoBehaviour
 
   void Update () 
   {
-    m_PreviousPoints = m_Points;
+    //m_PreviousPoints = m_Points;
     m_FrameIndex++;
 
     if (m_FrameIndex % frameSkip == 0)
@@ -44,7 +42,6 @@ public class PointCloudPlayer : MonoBehaviour
       ReadFrame();
       transform.position = m_Position;
 
-      // Update the mesh indicies array.
       m_Indices = new int[m_Points.Length];
       for (int i = 0; i < m_Points.Length; i++)
       {
@@ -54,6 +51,8 @@ public class PointCloudPlayer : MonoBehaviour
       m_Mesh.Clear();
       m_Mesh.vertices = m_Points;
       m_Mesh.SetIndices(m_Indices, MeshTopology.Points, 0);
+
+      pointCount = m_Mesh.vertices.Length;
     }
    
   }
@@ -61,31 +60,21 @@ public class PointCloudPlayer : MonoBehaviour
   void ReadFrame()
   {
     var frameIndex = m_BinaryReader.ReadInt32();
-    m_BinaryReader.ReadChar();
 
     ReadVector3Binary(out m_Position);
-    m_BinaryReader.ReadChar();
 
     for (int i = 0; i < m_Points.Length; i++)
     {
       ReadVector3Binary(out m_Points[i]);
-      m_BinaryReader.ReadChar();
-
     }
 
-    m_BinaryReader.ReadChar();
     m_BinaryReader.ReadChar();
   }
 
   void ReadVector3Binary(out Vector3 vec)
   {
-    m_BinaryReader.ReadChar();
     vec.x = m_BinaryReader.ReadSingle();
-
-    m_BinaryReader.ReadChar();
     vec.y = m_BinaryReader.ReadSingle();
-
-    m_BinaryReader.ReadChar();
     vec.z = m_BinaryReader.ReadSingle();
   }
 }

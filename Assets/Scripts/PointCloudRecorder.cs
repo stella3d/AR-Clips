@@ -8,28 +8,24 @@ using GoogleARCore;
 
 public class PointCloudRecorder : MonoBehaviour 
 {
-  const int MAX_POINT_COUNT = 61440;
+  const int MAX_POINT_COUNT = 15360;
+  const string k_DefaultFileName = "/ar-record-new.arvcr";
 
   Mesh m_Mesh;
 
-  Vector3[] m_Points = new Vector3[MAX_POINT_COUNT];
-
-  double m_LastPointCloudTimestamp;
-
-  int m_FrameIndex;
-
   FileStream file;
-  StreamWriter stream;
-
   BinaryWriter m_BinaryWriter;
 
+  int m_FrameIndex;
+  double m_LastPointCloudTimestamp;
+
   ArFrameRecord m_FrameRecord;
+  Vector3[] m_Points = new Vector3[MAX_POINT_COUNT];
 
 
 	void Start () 
   {
-    file = new FileStream(Application.persistentDataPath + "/pointcloud.json", FileMode.OpenOrCreate);
-    //stream = new StreamWriter(file);
+    file = new FileStream(Application.persistentDataPath + k_DefaultFileName, FileMode.OpenOrCreate);
     m_BinaryWriter = new BinaryWriter(file);
 	}
 	
@@ -42,23 +38,19 @@ public class PointCloudRecorder : MonoBehaviour
     if (pointcloud.PointCount > 0 && pointcloud.Timestamp > m_LastPointCloudTimestamp)
     {
       // Copy the point cloud points for mesh verticies.
+      Array.Clear(m_Points, 0, m_Points.Length);
       for (int i = 0; i < pointcloud.PointCount; i++)
       {
         m_Points[i] = pointcloud.GetPoint(i);
       }
 
-      for (int i = pointcloud.PointCount; i < MAX_POINT_COUNT; i++)
-      {
-        m_Points[i] = m_Points[pointcloud.PointCount - 1];
-      }
-
-
       m_LastPointCloudTimestamp = pointcloud.Timestamp;
 
-      m_FrameRecord = new ArFrameRecord(Frame.Pose, m_Points);
+      //m_FrameRecord = new ArFrameRecord(Frame.Pose, m_Points);
 
-      var start = new ThreadStart(() => { WriteFrame(m_FrameRecord); });
-      new Thread(start).Start();
+      //var start = new ThreadStart(() => { WriteFrame(m_FrameRecord); });
+      //new Thread(start).Start();
+      WriteFrameDirect();
 
     }
 
@@ -68,32 +60,42 @@ public class PointCloudRecorder : MonoBehaviour
   void WriteFrame(ArFrameRecord record)
   {
     m_BinaryWriter.Write(m_FrameIndex);
-    m_BinaryWriter.Write(' ');
 
-    WriteVector3Binary(record.position);
-    m_BinaryWriter.Write(' ');
+    m_BinaryWriter.Write(record.position.x);
+    m_BinaryWriter.Write(record.position.y);
+    m_BinaryWriter.Write(record.position.z);
 
     for (int i = 0; i < record.points.Length; i++)
     {
-      WriteVector3Binary(record.points[i]);
-      m_BinaryWriter.Write(',');
+      var vec = record.points[i];
+      m_BinaryWriter.Write(vec.x);
+      m_BinaryWriter.Write(vec.y);
+      m_BinaryWriter.Write(vec.z);
     }
-    m_BinaryWriter.Write(' ');
 
-    m_BinaryWriter.Write(';');
+    m_BinaryWriter.Write(';'); // probably not needed
   }
 
-  void WriteVector3Binary(Vector3 vec)
+  void WriteFrameDirect()
   {
-    m_BinaryWriter.Write('x');
-    m_BinaryWriter.Write(vec.x);
+    var pose = Frame.Pose;
+    m_BinaryWriter.Write(m_FrameIndex);
 
-    m_BinaryWriter.Write('y');
-    m_BinaryWriter.Write(vec.y);
+    m_BinaryWriter.Write(pose.position.x);
+    m_BinaryWriter.Write(pose.position.y);
+    m_BinaryWriter.Write(pose.position.z);
 
-    m_BinaryWriter.Write('z');
-    m_BinaryWriter.Write(vec.z);
+    for (int i = 0; i < m_Points.Length; i++)
+    {
+      var vec = m_Points[i];
+      m_BinaryWriter.Write(vec.x);
+      m_BinaryWriter.Write(vec.y);
+      m_BinaryWriter.Write(vec.z);
+    }
+
+    m_BinaryWriter.Write(';'); // probably not needed
   }
+ 
 }
 
 [Serializable]
