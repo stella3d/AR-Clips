@@ -7,7 +7,10 @@ public class TrackedPlaneVisuals : MonoBehaviour
   [SerializeField]
   Mesh m_PlaneMesh;
 
-  PointCloudPlayer m_Player;
+  public Material m_LineMaterial;
+
+
+  public PointCloudPlayer m_Player;
   public Vector3[][] m_PlanePoints;
   public List<XRLineRenderer> planeRenderers;
 
@@ -19,8 +22,8 @@ public class TrackedPlaneVisuals : MonoBehaviour
       var obj = new GameObject("plane outline");
       planeRenderers[i] = obj.AddComponent<XRLineRenderer>();
       planeRenderers[i].enabled = false;
+      planeRenderers[i].material = m_LineMaterial;
     }
-
   }
 	
   void Update()
@@ -29,7 +32,9 @@ public class TrackedPlaneVisuals : MonoBehaviour
 
     for (int i = 0; i < planeRenderers.Count; i++)
     {
-      if (planePoints[i][0] != Vector3.zero)
+      //Debug.Log(planePoints[i]);
+
+      if (planePoints[i] != null)
       {
         planeRenderers[i].enabled = true;
         planeRenderers[i].SetPositions(planePoints[i]);

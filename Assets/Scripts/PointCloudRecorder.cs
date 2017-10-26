@@ -11,13 +11,17 @@ public class PointCloudRecorder : MonoBehaviour
 {
   public ArRecordingController m_Controller;
 
+  const int k_StreamBufferSize = 1024 * 16;
+  const double k_StreamFlushPercent = .75;
+
   const int MAX_POINT_COUNT = 15360;
   const string k_DefaultFileName = "/ar-record-new.arvcr";
 
   Mesh m_Mesh;
 
   FileStream file;
-  BinaryWriter m_BinaryWriter;
+  MemoryStream buffer;
+  BinaryWriter m_BinaryStream;
 
   int m_FrameIndex;
   double m_LastPointCloudTimestamp;
@@ -31,7 +35,8 @@ public class PointCloudRecorder : MonoBehaviour
 	void Start () 
   {
     file = new FileStream(Application.persistentDataPath + k_DefaultFileName, FileMode.OpenOrCreate);
-    m_BinaryWriter = new BinaryWriter(file);
+    buffer = new MemoryStream(k_StreamBufferSize);
+    m_BinaryStream = new BinaryWriter(file);
 
     m_Controller = gameObject.GetComponent<ArRecordingController>();
 	}
@@ -53,12 +58,18 @@ public class PointCloudRecorder : MonoBehaviour
 
       m_LastPointCloudTimestamp = pointcloud.Timestamp;
 
-      //m_FrameRecord = new ArFrameRecord(Frame.Pose, m_Points);
-
       //var start = new ThreadStart(() => { WriteFrame(m_FrameRecord); });
       //new Thread(start).Start();
       WriteFrameDirect();
 
+      /* is the buffer more than %75 full ?
+      if(buffer.Position > k_StreamBufferSize * k_StreamFlushPercent)
+      {
+        buffer.WriteTo(file);
+        buffer.Flush();
+        buffer.Position = 0;
+      }
+      */
     }
 
     m_FrameIndex++;
@@ -66,68 +77,77 @@ public class PointCloudRecorder : MonoBehaviour
 
   void WriteFrame(ArFrameRecord record)
   {
-    m_BinaryWriter.Write(m_FrameIndex);
+    m_BinaryStream.Write(m_FrameIndex);
 
-    m_BinaryWriter.Write(record.position.x);
-    m_BinaryWriter.Write(record.position.y);
-    m_BinaryWriter.Write(record.position.z);
+    m_BinaryStream.Write(record.position.x);
+    m_BinaryStream.Write(record.position.y);
+    m_BinaryStream.Write(record.position.z);
 
     for (int i = 0; i < record.points.Length; i++)
     {
       var vec = record.points[i];
-      m_BinaryWriter.Write(vec.x);
-      m_BinaryWriter.Write(vec.y);
-      m_BinaryWriter.Write(vec.z);
+      m_BinaryStream.Write(vec.x);
+      m_BinaryStream.Write(vec.y);
+      m_BinaryStream.Write(vec.z);
     }
 
-    m_BinaryWriter.Write(';'); // probably not needed
+    m_BinaryStream.Write(';'); // probably not needed
   }
 
   /*
     Frames are written like this:
 
     frame index
+
     pose / phone position
 
     # of tracked planes
+    
     for each tracked plane:
       # of points in the boundary polygon
       all points in the polygon
 
     # of points in the point cloud
+    
     all points in the cloud
   */
   void WriteFrameDirect()
   {
-    m_BinaryWriter.Write(m_FrameIndex);
+    m_BinaryStream.Write(m_FrameIndex);
 
     WritePoseData();
     WritePlaneData();
     WritePointCloudData();
     // not really needed, more for humans / debugging
-    m_BinaryWriter.Write(';'); 
+    m_BinaryStream.Write(';'); 
   }
 
   void WritePointCloudData()
   {
     var cloud = Frame.PointCloud;
-    m_BinaryWriter.Write(cloud.PointCount);
+    m_BinaryStream.Write(cloud.PointCount);
 
     for (int i = 0; i < cloud.PointCount; i++)
     {
       var vec = m_Points[i];
-      m_BinaryWriter.Write(vec.x);
-      m_BinaryWriter.Write(vec.y);
-      m_BinaryWriter.Write(vec.z);
+      m_BinaryStream.Write(vec.x);
+      m_BinaryStream.Write(vec.y);
+      m_BinaryStream.Write(vec.z);
     }
   }
 
   void WritePoseData()
   {
     var pose = Frame.Pose;
-    m_BinaryWriter.Write(pose.position.x);
-    m_BinaryWriter.Write(pose.position.y);
-    m_BinaryWriter.Write(pose.position.z);
+
+    m_BinaryStream.Write(pose.position.x);
+    m_BinaryStream.Write(pose.position.y);
+    m_BinaryStream.Write(pose.position.z);
+
+    m_BinaryStream.Write(pose.rotation.w);
+    m_BinaryStream.Write(pose.rotation.x);
+    m_BinaryStream.Write(pose.rotation.y);
+    m_BinaryStream.Write(pose.rotation.z);
   }
 
   void WritePlaneData()
@@ -135,21 +155,21 @@ public class PointCloudRecorder : MonoBehaviour
     var planes = m_Controller.trackedPlanes;
     var planeCount = planes.Count;
 
-    m_BinaryWriter.Write(planeCount);
+    m_BinaryStream.Write(planeCount);
 
     for (int i = 0; i < planeCount; i++)
     {
       planes[i].GetBoundaryPolygon(ref m_PlaneBoundaryCache);
-
       var pointCount = m_PlaneBoundaryCache.Count;
-      m_BinaryWriter.Write(pointCount);
+
+      m_BinaryStream.Write(pointCount);
 
       for (int n = 0; n < pointCount; n++)
       {
         var vec = m_PlaneBoundaryCache[n];
-        m_BinaryWriter.Write(vec.x);
-        m_BinaryWriter.Write(vec.y);
-        m_BinaryWriter.Write(vec.z);
+        m_BinaryStream.Write(vec.x);
+        m_BinaryStream.Write(vec.y);
+        m_BinaryStream.Write(vec.z);
       }
     }
   }

@@ -1,15 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.IO;
+using System;
 
 public class PointCloudPlayer : MonoBehaviour 
 {
   const int MAX_POINT_COUNT = 15360;
 
+  public string fileSource;
+
   public Mesh m_Mesh;
   public Mesh m_PlaneMesh;
 
   public Vector3 position;
+  public Quaternion rotation;
   public Vector3[] pointCloud = new Vector3[MAX_POINT_COUNT];
   public Vector3[][] trackedPlanePolygons = new Vector3[64][];
 
@@ -27,7 +31,7 @@ public class PointCloudPlayer : MonoBehaviour
 
   void Start () 
   {
-    m_File = new FileStream("Assets/pointcloud.json", FileMode.Open);
+    m_File = new FileStream(fileSource, FileMode.Open);
     m_BinaryReader = new BinaryReader(m_File);
 
     if (m_Mesh == null)
@@ -44,8 +48,11 @@ public class PointCloudPlayer : MonoBehaviour
     {
       ReadFrame();
 
+      // update pose
       transform.position = position;
-
+      transform.rotation = rotation;
+ 
+      // update point cloud mesh visuals
       m_Indices = new int[pointCloud.Length];
       for (int i = 0; i < pointCloud.Length; i++)
       {
@@ -57,6 +64,11 @@ public class PointCloudPlayer : MonoBehaviour
       m_Mesh.SetIndices(m_Indices, MeshTopology.Points, 0);
 
     }
+    //else
+    //  m_Mesh.Clear();
+
+
+
   }
 
   void ReadFrame()
@@ -64,6 +76,8 @@ public class PointCloudPlayer : MonoBehaviour
     var frameIndex = m_BinaryReader.ReadInt32();
 
     ReadVector3(out position);
+
+    ReadQuaternion(out rotation);
 
     // read tracked plane data
     planeCount = m_BinaryReader.ReadInt32();
@@ -86,6 +100,12 @@ public class PointCloudPlayer : MonoBehaviour
       ReadVector3(out pointCloud[i]);
     }
 
+    var cloudLength = pointCloud.Length;
+    if (pointCount < pointCloud.Length)
+    {
+      Array.Clear(pointCloud, pointCount, cloudLength - pointCount);
+    }
+
     //ending char, probably can remove
     m_BinaryReader.ReadChar();
   }
@@ -95,6 +115,14 @@ public class PointCloudPlayer : MonoBehaviour
     vec.x = m_BinaryReader.ReadSingle();
     vec.y = m_BinaryReader.ReadSingle();
     vec.z = m_BinaryReader.ReadSingle();
+  }
+
+  void ReadQuaternion(out Quaternion quat)
+  {
+    quat.w = m_BinaryReader.ReadSingle();
+    quat.x = m_BinaryReader.ReadSingle();
+    quat.y = m_BinaryReader.ReadSingle();
+    quat.z = m_BinaryReader.ReadSingle();
   }
 
 
