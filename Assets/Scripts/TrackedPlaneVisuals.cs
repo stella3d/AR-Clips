@@ -7,7 +7,7 @@ public class TrackedPlaneVisuals : MonoBehaviour
   [SerializeField]
   Mesh m_PlaneMesh;
 
-  public Material m_LineMaterial;
+  public Material lineMaterial;
 
 
   public PointCloudPlayer m_Player;
@@ -22,7 +22,7 @@ public class TrackedPlaneVisuals : MonoBehaviour
       var obj = new GameObject("plane outline");
       planeRenderers[i] = obj.AddComponent<XRLineRenderer>();
       planeRenderers[i].enabled = false;
-      planeRenderers[i].material = m_LineMaterial;
+      planeRenderers[i].material = lineMaterial;
     }
   }
 	
@@ -44,11 +44,6 @@ public class TrackedPlaneVisuals : MonoBehaviour
         planeRenderers[i].enabled = false;
       }
     }
-  }
-
-  void AddRenderer()
-  {
-    
   }
 
 }

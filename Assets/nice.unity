@@ -259,6 +259,7 @@ MonoBehaviour:
   m_andyAndroidPrefab: {fileID: 1190091649889860, guid: 242a320930b81430ba610f94f9b760c8,
     type: 2}
   m_searchingForPlaneUI: {fileID: 1133631540}
+  anchors: []
 --- !u!114 &627916104
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -300,7 +301,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1133631540}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -543, z: 0}
+  m_LocalPosition: {x: 0, y: -662, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1764419356}
@@ -489,7 +490,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1608144853}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1123, y: 623, z: 0}
+  m_LocalPosition: {x: 795, y: 742, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1133631541}
@@ -573,7 +574,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1759795985}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4d5645b79cc5e4251827ffe171ed4658, type: 3}
   m_Name: 
@@ -622,7 +623,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1764419355}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1043, y: 0, z: 0}
+  m_LocalPosition: {x: -715, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1133631541}

@@ -14,8 +14,15 @@ public class PointCloudPlayer : MonoBehaviour
 
   public Vector3 position;
   public Quaternion rotation;
+
+  /// don't click an array this big, it crashes Unity
+  [HideInInspector] 
   public Vector3[] pointCloud = new Vector3[MAX_POINT_COUNT];
+
   public Vector3[][] trackedPlanePolygons = new Vector3[64][];
+
+  public Vector3[] anchorPositions = new Vector3[64];
+  public Quaternion[] anchorRotations = new Quaternion[64];
 
   double m_LastPointCloudTimestamp;
 
@@ -63,12 +70,13 @@ public class PointCloudPlayer : MonoBehaviour
       m_Mesh.vertices = pointCloud;
       m_Mesh.SetIndices(m_Indices, MeshTopology.Points, 0);
 
+
+      for (int i = 0; i < anchorPositions.Length; i++)
+      {
+        
+      }
+
     }
-    //else
-    //  m_Mesh.Clear();
-
-
-
   }
 
   void ReadFrame()
@@ -104,6 +112,21 @@ public class PointCloudPlayer : MonoBehaviour
     if (pointCount < pointCloud.Length)
     {
       Array.Clear(pointCloud, pointCount, cloudLength - pointCount);
+    }
+
+    // Read Frame anchor data
+    var anchorCount = m_BinaryReader.ReadInt32();
+
+    if (anchorCount > 0)
+    {
+      Debug.Log("anchor count:");
+      Debug.Log(anchorCount);
+
+      for (int i = 0; i < anchorCount; i++)
+      {
+        ReadVector3(out anchorPositions[i]);
+        ReadQuaternion(out anchorRotations[i]);
+      }
     }
 
     //ending char, probably can remove
