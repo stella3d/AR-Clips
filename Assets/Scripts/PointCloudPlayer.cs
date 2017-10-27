@@ -115,19 +115,7 @@ public class PointCloudPlayer : MonoBehaviour
     }
 
     // Read Frame anchor data
-    var anchorCount = m_BinaryReader.ReadInt32();
-
-    if (anchorCount > 0)
-    {
-      Debug.Log("anchor count:");
-      Debug.Log(anchorCount);
-
-      for (int i = 0; i < anchorCount; i++)
-      {
-        ReadVector3(out anchorPositions[i]);
-        ReadQuaternion(out anchorRotations[i]);
-      }
-    }
+    ReadAnchors();
 
     //ending char, probably can remove
     m_BinaryReader.ReadChar();
@@ -148,5 +136,18 @@ public class PointCloudPlayer : MonoBehaviour
     quat.z = m_BinaryReader.ReadSingle();
   }
 
+  void ReadAnchors()
+  {
+    var anchorCount = m_BinaryReader.ReadInt32();
+
+    if (anchorCount > 0)
+    {
+      for (int i = 0; i < anchorCount; i++)
+      {
+        ReadVector3(out anchorPositions[i]);
+        ReadQuaternion(out anchorRotations[i]);
+      }
+    }
+  }
 
 }
