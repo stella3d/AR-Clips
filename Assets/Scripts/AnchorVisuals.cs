@@ -24,7 +24,6 @@ public class AnchorVisuals : MonoBehaviour
     m_Player = gameObject.GetComponent<PointCloudPlayer>();
     for (int i = 0; i < 64; i++)
     {
-      Debug.Log(i);
       var obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
       obj.transform.localScale *= scaling;
       obj.name = "anchor representation";
