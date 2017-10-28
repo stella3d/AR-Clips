@@ -18,8 +18,8 @@ namespace ARcorder
 
     Mesh m_Mesh;
 
-    FileStream file;
-    BinaryWriter m_BinaryStream;
+    FileStream m_File;
+    BinaryWriter m_Stream;
 
     int m_FrameIndex;
     double m_LastPointCloudTimestamp;
@@ -31,92 +31,79 @@ namespace ARcorder
 
   	void Start () 
     {
-      file = new FileStream(Application.persistentDataPath + k_DefaultFileName, FileMode.OpenOrCreate);
-      m_BinaryStream = new BinaryWriter(file);
-
+      m_File = new FileStream(Application.persistentDataPath + k_DefaultFileName, FileMode.OpenOrCreate);
+      m_Stream = new BinaryWriter(m_File);
       m_Controller = gameObject.GetComponent<ArRecordingController>();
   	}
-  	
+
   	void Update () 
     {
+      m_FrameIndex++;
       if (Frame.TrackingState != FrameTrackingState.Tracking)
         return;
 
-      PointCloud pointcloud = Frame.PointCloud;
-      if (pointcloud.PointCount > 0 && pointcloud.Timestamp > m_LastPointCloudTimestamp)
+      PointCloud cloud = Frame.PointCloud;
+      if (cloud.PointCount > 0 && cloud.Timestamp > m_LastPointCloudTimestamp)
       {
-        // Copy the point cloud points for mesh verticies.
         Array.Clear(m_Points, 0, m_Points.Length);
-        for (int i = 0; i < pointcloud.PointCount; i++)
+        for (int i = 0; i < cloud.PointCount; i++)
         {
-          m_Points[i] = pointcloud.GetPoint(i);
+          m_Points[i] = cloud.GetPoint(i);
         }
 
-        m_LastPointCloudTimestamp = pointcloud.Timestamp;
+        m_LastPointCloudTimestamp = cloud.Timestamp;
 
         // write all frame data in here
-        WriteFrameDirect();
+        RecordFrame();
       }
-
-      m_FrameIndex++;
   	}
 
     /*
-      Frames are written like this:
+      Frames are written like this for now:
 
-      frame index
-
-      pose / phone position
-
-      # of tracked planes
+      frame index (int)
+      timestamp (double)
+      light estimate (float)
+      pose / phone position (transform)
       
+      # of tracked planes (int)
       for each tracked plane:
-        # of points in the boundary polygon
-        all points in the polygon
+        # of points in the boundary polygon (int)
+        all points in the polygon (Vector3[])
 
-      # of points in the point cloud
-      
-      all points in the cloud
+      # of points in the point cloud (int)
+      all points in the cloud  (Vector3[])
     */
-    void WriteFrameDirect()
+
+    void RecordFrame()
     {
-      m_BinaryStream.Write(m_FrameIndex);
+      m_Stream.Write(m_FrameIndex);
+      m_Stream.Write(Frame.Timestamp);
+      m_Stream.Write(Frame.LightEstimate.PixelIntensity);
 
       WritePoseData();
-      WritePlaneData();
       WritePointCloudData();
+      WritePlaneData();
       WriteAnchorData();
 
       // not really needed, more for humans / debugging
-      m_BinaryStream.Write(';'); 
-    }
-
-    void WritePointCloudData()
-    {
-      var cloud = Frame.PointCloud;
-      m_BinaryStream.Write(cloud.PointCount);
-
-      for (int i = 0; i < cloud.PointCount; i++)
-      {
-        var vec = m_Points[i];
-        m_BinaryStream.Write(vec.x);
-        m_BinaryStream.Write(vec.y);
-        m_BinaryStream.Write(vec.z);
-      }
+      m_Stream.Write(';'); 
     }
 
     void WritePoseData()
     {
-      var pose = Frame.Pose;
+      WriteVector3(Frame.Pose.position);
+      WriteQuaternion(Frame.Pose.rotation);
+    }
 
-      m_BinaryStream.Write(pose.position.x);
-      m_BinaryStream.Write(pose.position.y);
-      m_BinaryStream.Write(pose.position.z);
+    void WritePointCloudData()
+    {
+      m_Stream.Write(Frame.PointCloud.PointCount);
 
-      m_BinaryStream.Write(pose.rotation.w);
-      m_BinaryStream.Write(pose.rotation.x);
-      m_BinaryStream.Write(pose.rotation.y);
-      m_BinaryStream.Write(pose.rotation.z);
+      for (int i = 0; i < Frame.PointCloud.PointCount; i++)
+      {
+        WriteVector3(m_Points[i]);
+      }
     }
 
     void WritePlaneData()
@@ -124,21 +111,18 @@ namespace ARcorder
       var planes = m_Controller.trackedPlanes;
       var planeCount = planes.Count;
 
-      m_BinaryStream.Write(planeCount);
+      m_Stream.Write(planeCount);
 
       for (int i = 0; i < planeCount; i++)
       {
         planes[i].GetBoundaryPolygon(ref m_PlaneBoundaryCache);
         var pointCount = m_PlaneBoundaryCache.Count;
 
-        m_BinaryStream.Write(pointCount);
+        m_Stream.Write(pointCount);
 
         for (int n = 0; n < pointCount; n++)
         {
           var vec = m_PlaneBoundaryCache[n];
-          m_BinaryStream.Write(vec.x);
-          m_BinaryStream.Write(vec.y);
-          m_BinaryStream.Write(vec.z);
         }
       }
     }
@@ -147,21 +131,29 @@ namespace ARcorder
     {
       var anchors = m_Controller.anchors;
 
-      m_BinaryStream.Write(anchors.Count);
+      m_Stream.Write(anchors.Count);
 
       for (int i = 0; i < anchors.Count; i++)
       {
         var trans = anchors[i].transform;
-
-        m_BinaryStream.Write(trans.position.x);
-        m_BinaryStream.Write(trans.position.y);
-        m_BinaryStream.Write(trans.position.z);
-
-        m_BinaryStream.Write(trans.rotation.w);
-        m_BinaryStream.Write(trans.rotation.x);
-        m_BinaryStream.Write(trans.rotation.y);
-        m_BinaryStream.Write(trans.rotation.z);
+        WriteVector3(trans.position);
+        WriteQuaternion(trans.rotation);
       }
+    }
+
+    void WriteVector3(Vector3 vec)
+    {
+      m_Stream.Write(vec.x);
+      m_Stream.Write(vec.y);
+      m_Stream.Write(vec.z);
+    }
+
+    void WriteQuaternion(Quaternion quat)
+    {
+      m_Stream.Write(quat.w);
+      m_Stream.Write(quat.x);
+      m_Stream.Write(quat.y);
+      m_Stream.Write(quat.z);
     }
    
   }

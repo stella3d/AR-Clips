@@ -1,57 +1,59 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System;
 
 public class PointCloudPlayer : MonoBehaviour 
 {
-  const int MAX_POINT_COUNT = 15360;
-
+  public int updatesPerDeviceFrame;
   public string fileSource;
-
-  public Mesh m_Mesh;
-  public Mesh m_PlaneMesh;
+  public Mesh mesh;
 
   public Vector3 position;
   public Quaternion rotation;
-
-  /// don't click an array this big, it crashes Unity
-  [HideInInspector] 
-  public Vector3[] pointCloud = new Vector3[MAX_POINT_COUNT];
-
-  public Vector3[][] trackedPlanePolygons = new Vector3[64][];
-
-  public Vector3[] anchorPositions = new Vector3[64];
-  public Quaternion[] anchorRotations = new Quaternion[64];
-
-  double m_LastPointCloudTimestamp;
-
-  public int m_FrameIndex;
-  public int frameSkip = 1;
-  public int pointCount;
+  public int deviceFrameIndex;
+  public double deviceTimestamp;
+  public float lightEstimate;
   public int planeCount;
+  public int pointCount;
+
+  [HideInInspector]
+  public Vector3[] pointCloud = new Vector3[k_MaxPoints];
+  [HideInInspector]
+  public Vector3[][] trackedPlanePolygons = new Vector3[k_MaxPlanes][];
+  [HideInInspector]
+  public Vector3[] anchorPositions = new Vector3[k_MaxAnchors];
+  [HideInInspector]
+  public Quaternion[] anchorRotations = new Quaternion[k_MaxAnchors];
+
+  const int k_MaxPlanes = 512;        
+  const int k_MaxAnchors = 512;        
+  const int k_MaxPoints = 15360;
 
   FileStream m_File;
-  BinaryReader m_BinaryReader;
+  BinaryReader m_Stream;
 
-  int[] m_Indices = new int[MAX_POINT_COUNT];
+  int m_FrameSkipIndex;
+  double m_LastPointCloudTimestamp;
+  int[] m_Indices = new int[k_MaxPoints];
 
   void Start () 
   {
     m_File = new FileStream(fileSource, FileMode.Open);
-    m_BinaryReader = new BinaryReader(m_File);
+    m_Stream = new BinaryReader(m_File);
 
-    if (m_Mesh == null)
-      m_Mesh = GetComponent<MeshFilter>().mesh;
+    if (mesh == null)
+      mesh = GetComponent<MeshFilter>().mesh;
     
-    m_Mesh.Clear();
+    mesh.Clear();
   }
 
   void Update () 
   {
-    m_FrameIndex++;
+    m_FrameSkipIndex++;
 
-    if (m_FrameIndex % frameSkip == 0)
+    if (m_FrameSkipIndex % updatesPerDeviceFrame == 0)
     {
       ReadFrame();
 
@@ -66,33 +68,25 @@ public class PointCloudPlayer : MonoBehaviour
         m_Indices[i] = i;
       }
 
-      m_Mesh.Clear();
-      m_Mesh.vertices = pointCloud;
-      m_Mesh.SetIndices(m_Indices, MeshTopology.Points, 0);
-
-
-      for (int i = 0; i < anchorPositions.Length; i++)
-      {
-        
-      }
-
+      mesh.Clear();
+      mesh.vertices = pointCloud;
+      mesh.SetIndices(m_Indices, MeshTopology.Points, 0);
     }
   }
 
-  void ReadFrame()
+  void ReadPose()
   {
-    var frameIndex = m_BinaryReader.ReadInt32();
-
     ReadVector3(out position);
-
     ReadQuaternion(out rotation);
+  }
 
-    // read tracked plane data
-    planeCount = m_BinaryReader.ReadInt32();
+  void ReadTrackedPlanes()
+  {
+    planeCount = m_Stream.ReadInt32();
 
     for (int i = 0; i < planeCount; i++)
     {
-      var thisPlanepointCount = m_BinaryReader.ReadInt32();
+      var thisPlanepointCount = m_Stream.ReadInt32();
       trackedPlanePolygons[i] = new Vector3[thisPlanepointCount];
 
       for (int n = 0; n < thisPlanepointCount; n++)
@@ -100,45 +94,56 @@ public class PointCloudPlayer : MonoBehaviour
         ReadVector3(out trackedPlanePolygons[i][n]);
       }
     }
+  }
 
-    // read point cloud data
-    pointCount = m_BinaryReader.ReadInt32();
+  void ReadPointCloud()
+  {
+    pointCount = m_Stream.ReadInt32();
     for (int i = 0; i < pointCount; i++)
     {
       ReadVector3(out pointCloud[i]);
     }
 
-    var cloudLength = pointCloud.Length;
     if (pointCount < pointCloud.Length)
     {
-      Array.Clear(pointCloud, pointCount, cloudLength - pointCount);
+      Array.Clear(pointCloud, pointCount, pointCloud.Length - pointCount);
     }
+  }
 
-    // Read Frame anchor data
+
+  void ReadFrame()
+  {
+    deviceFrameIndex = m_Stream.ReadInt32();
+    deviceTimestamp = m_Stream.ReadDouble();
+    lightEstimate = m_Stream.ReadSingle();
+
+    ReadPose();
+    ReadPointCloud();
+    ReadTrackedPlanes();
     ReadAnchors();
 
-    //ending char, probably can remove
-    m_BinaryReader.ReadChar();
+    // frame delimiter
+    m_Stream.ReadChar();
   }
 
   void ReadVector3(out Vector3 vec)
   {
-    vec.x = m_BinaryReader.ReadSingle();
-    vec.y = m_BinaryReader.ReadSingle();
-    vec.z = m_BinaryReader.ReadSingle();
+    vec.x = m_Stream.ReadSingle();
+    vec.y = m_Stream.ReadSingle();
+    vec.z = m_Stream.ReadSingle();
   }
 
   void ReadQuaternion(out Quaternion quat)
   {
-    quat.w = m_BinaryReader.ReadSingle();
-    quat.x = m_BinaryReader.ReadSingle();
-    quat.y = m_BinaryReader.ReadSingle();
-    quat.z = m_BinaryReader.ReadSingle();
+    quat.w = m_Stream.ReadSingle();
+    quat.x = m_Stream.ReadSingle();
+    quat.y = m_Stream.ReadSingle();
+    quat.z = m_Stream.ReadSingle();
   }
 
   void ReadAnchors()
   {
-    var anchorCount = m_BinaryReader.ReadInt32();
+    var anchorCount = m_Stream.ReadInt32();
 
     if (anchorCount > 0)
     {
