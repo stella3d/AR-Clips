@@ -27,7 +27,7 @@ namespace ARcorder
   	void Start () 
     {
       // how many seconds have we been living in the Willenium ?
-      var time = (DateTime.UtcNow - new DateTime (2000, 1, 1)).TotalSeconds;
+      var time = (int)(DateTime.UtcNow - new DateTime (2000, 1, 1)).TotalSeconds;
       var fileName = time + k_FileExtension;
       var path = Path.Combine(Application.persistentDataPath, fileName);
 
@@ -60,6 +60,7 @@ namespace ARcorder
     /*
      * In the stream protocol, there are only arrays & primitives.
      * Every array is preceded by an int of the array length.
+
      * 
       Frames are written like this for now, but the data structure
       should be defined by a header at the beginning of the stream 
