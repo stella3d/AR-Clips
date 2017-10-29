@@ -14,18 +14,21 @@ public class TrackedPlaneVisuals : ARClipVisual
   void Start()
   {
     base.Start();
+    planeRenderers = new List<XRLineRenderer>();
+
     for (int i = 0; i < 20; i++)
     {
       var obj = new GameObject("plane outline");
-      planeRenderers[i] = obj.AddComponent<XRLineRenderer>();
-      planeRenderers[i].enabled = false;
-      planeRenderers[i].material = lineMaterial;
+      var render = obj.AddComponent<XRLineRenderer>();
+      render.enabled = false;
+      render.material = lineMaterial;
+      planeRenderers.Add(render);
     }
   }
 	
   void Update()
   {
-    var planePoints = m_Reader.trackedPlanePolygons;
+    var planePoints = m_Reader.planePolygons;
 
     for (int i = 0; i < planeRenderers.Count; i++)
     {
