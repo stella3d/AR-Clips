@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 364666478}
   - component: {fileID: 364666479}
   m_Layer: 0
-  m_Name: Sphere
+  m_Name: Ar Device Ghost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
