@@ -5,45 +5,44 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using GoogleARCore;
-using GoogleARCore.HelloAR;
 
 namespace ARcorder
 {
-  public class PointCloudRecorder : MonoBehaviour 
+  public class ARClipRecorder : MonoBehaviour 
   {
     public ArRecordingController m_Controller;
 
-    const int MAX_POINT_COUNT = 15360;
-    const string k_DefaultFileName = "/ar-record-new.arvcr";
-
-    Mesh m_Mesh;
+    const int k_MaxPoints = 15360;
+    const string k_FileExtension = ".arclip";
 
     FileStream m_File;
     BinaryWriter m_Stream;
 
-    int m_FrameIndex;
-    double m_LastPointCloudTimestamp;
+    double m_LastCloudTimestamp;
 
-    Vector3[] m_Points = new Vector3[MAX_POINT_COUNT];
+    Vector3[] m_Points = new Vector3[k_MaxPoints];
 
     List<Vector3> m_PlaneBoundaryCache = new List<Vector3>();
 
-
   	void Start () 
     {
-      m_File = new FileStream(Application.persistentDataPath + k_DefaultFileName, FileMode.OpenOrCreate);
+      // how many seconds have we been living in the Willenium ?
+      var time = (DateTime.UtcNow - new DateTime (2000, 1, 1)).TotalSeconds;
+      var fileName = time + k_FileExtension;
+      var path = Path.Combine(Application.persistentDataPath, fileName);
+
+      m_File = new FileStream(path, FileMode.OpenOrCreate);
       m_Stream = new BinaryWriter(m_File);
       m_Controller = gameObject.GetComponent<ArRecordingController>();
   	}
 
   	void Update () 
     {
-      m_FrameIndex++;
       if (Frame.TrackingState != FrameTrackingState.Tracking)
         return;
 
       PointCloud cloud = Frame.PointCloud;
-      if (cloud.PointCount > 0 && cloud.Timestamp > m_LastPointCloudTimestamp)
+      if (cloud.PointCount > 0 && cloud.Timestamp > m_LastCloudTimestamp)
       {
         Array.Clear(m_Points, 0, m_Points.Length);
         for (int i = 0; i < cloud.PointCount; i++)
@@ -51,7 +50,7 @@ namespace ARcorder
           m_Points[i] = cloud.GetPoint(i);
         }
 
-        m_LastPointCloudTimestamp = cloud.Timestamp;
+        m_LastCloudTimestamp = cloud.Timestamp;
 
         // write all frame data in here
         RecordFrame();
@@ -59,25 +58,33 @@ namespace ARcorder
   	}
 
     /*
-      Frames are written like this for now:
+     * In the stream protocol, there are only arrays & primitives.
+     * Every array is preceded by an int of the array length.
+     * 
+      Frames are written like this for now, but the data structure
+      should be defined by a header at the beginning of the stream 
 
-      frame index (int)
-      timestamp (double)
-      light estimate (float)
-      pose / phone position (transform)
+      in order:
+
+      timestamp ( double )
+      light estimate ( float )
+
+      device position ( Vector3 )
+      device rotation ( Quaternion )
       
-      # of tracked planes (int)
+      # of tracked planes ( int )
       for each tracked plane:
-        # of points in the boundary polygon (int)
-        all points in the polygon (Vector3[])
+        # of points in the boundary polygon ( int )
+        all points in the polygon ( Vector3[vertexCount] )
 
-      # of points in the point cloud (int)
-      all points in the cloud  (Vector3[])
+      # of points in the point cloud ( int )
+      all points in the cloud  ( Vector3[pointCount] )
+      
+      frame delimiter ( ; )
     */
 
     void RecordFrame()
     {
-      m_Stream.Write(m_FrameIndex);
       m_Stream.Write(Frame.Timestamp);
       m_Stream.Write(Frame.LightEstimate.PixelIntensity);
 
@@ -86,7 +93,8 @@ namespace ARcorder
       WritePlaneData();
       WriteAnchorData();
 
-      // not really needed, more for humans / debugging
+      // ; is our frame delimiter, which allows aligning
+      // to a frame no matter where you start getting data
       m_Stream.Write(';'); 
     }
 
@@ -122,7 +130,7 @@ namespace ARcorder
 
         for (int n = 0; n < pointCount; n++)
         {
-          var vec = m_PlaneBoundaryCache[n];
+          WriteVector3(m_PlaneBoundaryCache[n]);
         }
       }
     }

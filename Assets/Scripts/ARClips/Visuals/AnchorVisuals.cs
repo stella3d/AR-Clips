@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class AnchorVisuals : MonoBehaviour
+public class AnchorVisuals : ARClipVisual
 {
   [SerializeField]
   Mesh m_PlaneMesh;
@@ -10,10 +10,7 @@ public class AnchorVisuals : MonoBehaviour
   public Material anchorMaterial;
   public float scaling = 0.125f;
 
-  public PointCloudPlayer m_Player;
-
   public MeshRenderer[] anchorRenderers;
-
   public GameObject[] anchorObjects;
 
   void Start()
@@ -21,7 +18,6 @@ public class AnchorVisuals : MonoBehaviour
     anchorObjects = new GameObject[64];
     anchorRenderers = new MeshRenderer[64];
 
-    m_Player = gameObject.GetComponent<PointCloudPlayer>();
     for (int i = 0; i < 64; i++)
     {
       var obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -39,8 +35,8 @@ public class AnchorVisuals : MonoBehaviour
 
   void Update()
   {
-    var positions = m_Player.anchorPositions;
-    var rotations = m_Player.anchorRotations;
+    var positions = m_Reader.anchorPositions;
+    var rotations = m_Reader.anchorRotations;
 
     for (int i = 0; i < positions.Length; i++)
     {
@@ -48,7 +44,6 @@ public class AnchorVisuals : MonoBehaviour
       {
         anchorRenderers[i].enabled = true;
         var obj = anchorObjects[i];
-        obj.transform.localScale = Vector3.one * scaling;
         obj.transform.SetPositionAndRotation(positions[i], rotations[i]);
       }
     }
