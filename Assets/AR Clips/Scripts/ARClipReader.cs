@@ -96,7 +96,6 @@ public class ARClipReader : MonoBehaviour
   {
     var frame = (int)Mathf.Round(clip.frameCount * scrubByPercent);
     var clamped = Mathf.Clamp(frame, 0, clip.timeStampPositions.Length - 1);
-    Debug.Log(clamped);
 
     m_Reader.SeekToPosition(clip.timeStampPositions[clamped]);
     m_Reader.totalFrameCount = clamped;
