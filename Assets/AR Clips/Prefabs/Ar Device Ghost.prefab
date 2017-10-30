@@ -60,8 +60,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1313301729563068}
-  m_LocalRotation: {x: -0.21252914, y: 0.8346513, z: -0.31692636, w: -0.3971729}
-  m_LocalPosition: {x: 0.12952621, y: 0.18403085, z: 1.3894991}
+  m_LocalRotation: {x: 0.2271864, y: 0.42647788, z: -0.10572221, w: 0.86909485}
+  m_LocalPosition: {x: -1.6796603, y: 0.45625797, z: 3.8226857}
   m_LocalScale: {x: 0.1438, y: 0.0695, z: 0.0085}
   m_Children:
   - {fileID: 4424059007124694}
@@ -75,8 +75,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1698593118039578}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2, z: -69}
-  m_LocalScale: {x: 6.954103, y: 14.388489, z: 117.64705}
+  m_LocalPosition: {x: -0.8, y: 0.8, z: -36}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4334987326466004}
   m_RootOrder: 0
@@ -174,7 +174,7 @@ Light:
   serializedVersion: 8
   m_Type: 1
   m_Color: {r: 1, g: 0.99897623, b: 0.93836063, a: 1}
-  m_Intensity: 0.3907196
+  m_Intensity: 0.25495368
   m_Range: 2
   m_SpotAngle: 30
   m_CookieSize: 10
@@ -211,19 +211,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 772c6f48d6ba04448a95d86740307ec5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  updatesPerDeviceUpdate: 2
+  updatesPerDeviceUpdate: 3
   clip: {fileID: 11400000, guid: d88a4c89b8d7f4af98614bddb855dda5, type: 2}
   fileSource: 
-  scrubByPercent: 0.198
-  elapsedSeconds: -6.271308108000085
-  updateCount: 395
-  pointCount: 93
+  scrubByPercent: 0.517
+  elapsedSeconds: 140.66748024197295
+  updateCount: 1258
+  pointCount: 99
   planeCount: 2
-  anchorCount: 0
-  position: {x: 0.12952621, y: 0.18403085, z: 1.3894991}
-  rotation: {x: -0.21252912, y: 0.83465123, z: -0.31692633, w: -0.39717287}
-  timestamp: 191853.290078832
-  lightEstimate: 0.1953598
+  anchorCount: 12
+  position: {x: -1.6555021, y: 0.46495974, z: 3.8296998}
+  rotation: {x: 0.21850859, y: 0.44457307, z: -0.106027685, w: 0.86218727}
+  timestamp: 191941.098931841
+  lightEstimate: 0.147183
 --- !u!114 &114304748003231266
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -237,7 +237,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Reader: {fileID: 114173141868680476}
   m_PlaneMesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
-  anchorMaterial: {fileID: 2100000, guid: d901fe6933510974e963164c35e7aa36, type: 2}
+  anchorMaterial: {fileID: 2100000, guid: e381d940f0ee33445b16f286c175a437, type: 2}
   scaling: 0.125
   anchorRenderers:
   - {fileID: 0}
@@ -411,8 +411,6 @@ MonoBehaviour:
   m_PlaneMesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
   lineMaterial: {fileID: 2100000, guid: 4a10e4f88372c8d488aaeb8a2a406e04, type: 2}
   planeRenderers:
-  - {fileID: 0}
-  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

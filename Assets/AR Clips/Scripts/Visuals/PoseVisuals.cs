@@ -16,8 +16,8 @@ public class PoseVisuals : ARClipVisual
     {
       var trans = deviceObject.transform;
 
-      trans.position = Vector3.Lerp(trans.position, m_Reader.position, skipIndex / skip);
-      trans.rotation = Quaternion.Lerp(trans.rotation, m_Reader.rotation, skipIndex / skip);
+      trans.position = Vector3.Lerp(trans.position, m_Reader.position, skipIndex / skip + 3);
+      trans.rotation = Quaternion.Lerp(trans.rotation, m_Reader.rotation, skipIndex / skip + 3);
 
       if (skipIndex < skip)
         skipIndex++;

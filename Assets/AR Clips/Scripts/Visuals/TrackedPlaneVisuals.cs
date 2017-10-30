@@ -16,7 +16,7 @@ public class TrackedPlaneVisuals : ARClipVisual
     base.Start();
     planeRenderers = new List<XRLineRenderer>();
 
-    for (int i = 0; i < 20; i++)
+    for (int i = 2; i < 20; i++)
     {
       var obj = new GameObject("plane outline");
       var render = obj.AddComponent<XRLineRenderer>();
@@ -46,7 +46,7 @@ public class TrackedPlaneVisuals : ARClipVisual
       if (planePoints[i] != null)
       {
         planeRenderers[i].enabled = true;
-        planeRenderers[i].SetPositions(planePoints[i]);
+        planeRenderers[i].SetPositions(planePoints[i], true);
       }
       else
       {
