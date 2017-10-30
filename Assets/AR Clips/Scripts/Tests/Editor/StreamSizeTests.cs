@@ -11,24 +11,30 @@ public class StreamSizeTests
 {
   
   FileStream m_File;
+  FileStream m_DeltaFile;
   FileStream m_GzipFile;
   BufferedStream m_Buffer;
   GZipStream m_GzipStream;
   BinaryWriter m_Writer;
+  BinaryWriter m_DeltaWriter;
   BinaryWriter m_GzipWriter;
 
   [OneTimeSetUp]
   public void Setup()
   {
     var fileName = Application.dataPath + "/uncompressed.txt";
+    var deltaFileName = Application.dataPath + "/uncompressed-delta.txt";
     var gzipFileName = Application.dataPath + "/compressed.txt";
 
-    m_File = new FileStream(fileName, FileMode.CreateNew);
-    m_GzipFile = new FileStream(gzipFileName, FileMode.CreateNew);
+    m_File = new FileStream(fileName, FileMode.OpenOrCreate);
+    m_DeltaFile = new FileStream(deltaFileName, FileMode.OpenOrCreate);
+    m_GzipFile = new FileStream(gzipFileName, FileMode.OpenOrCreate);
+
     m_GzipStream = new GZipStream(m_GzipFile, CompressionMode.Compress);
     m_Buffer = new BufferedStream(m_GzipStream, 65536);
 
     m_Writer = new BinaryWriter(m_File);
+    m_DeltaWriter = new BinaryWriter(m_DeltaFile);
     m_GzipWriter = new BinaryWriter(m_Buffer);
   }
 
@@ -83,6 +89,17 @@ public class StreamSizeTests
     m_GzipWriter.Flush();
     m_GzipWriter.Close();
     fs.Close();
+  }
+
+  [Test]
+  public void TestShorts()
+  {
+    for (int i = 0; i < 100000; i++)
+    {
+      m_Writer.Write(i);
+      m_DeltaWriter.Write((Int16)i);
+      m_GzipWriter.Write((Int16)i);
+    }  
   }
     
 }
