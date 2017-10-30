@@ -9,6 +9,7 @@ using System.Collections;
 
 public class StreamSizeTests 
 {
+  
   FileStream m_File;
   FileStream m_GzipFile;
   BufferedStream m_Buffer;
@@ -63,5 +64,25 @@ public class StreamSizeTests
     m_File.Close();
     m_GzipFile.Close();
 	}
+
+  [Test]
+  public void WriteRealStreamCopy() 
+  {
+    var fs = new FileStream("Assets/demo2.arclip.gzip", FileMode.OpenOrCreate);
+    m_GzipStream = new GZipStream(fs, CompressionMode.Compress);
+    m_Buffer = new BufferedStream(m_GzipStream, 65536);
+    m_GzipWriter = new BinaryWriter(m_Buffer);
+
+    var bytes = File.ReadAllBytes("Assets/demo2.arclip");
+
+    //for (var i = 0; i < bytes.Length; i++)
+    //{
+    m_GzipWriter.Write(bytes);
+    //}
+
+    m_GzipWriter.Flush();
+    m_GzipWriter.Close();
+    fs.Close();
+  }
     
 }
