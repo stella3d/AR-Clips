@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PointCloudVisuals : ARClipVisual
 {
   [SerializeField]
   Mesh m_Mesh;
 
-  const int k_MaxPoints = 15360;
+  const int k_MaxPoints = 1920 ;
   int[] m_Indices = new int[k_MaxPoints];
 
   void Start()
@@ -19,6 +20,7 @@ public class PointCloudVisuals : ARClipVisual
   void Update()
   {
     var pointCloud = m_Reader.pointCloud;
+    // TODO - this allocates like hell.  find a better way to do this.
     m_Indices = new int[pointCloud.Length];
     for (int i = 0; i < pointCloud.Length; i++)
     {

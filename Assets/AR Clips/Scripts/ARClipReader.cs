@@ -56,12 +56,10 @@ public class ARClipReader : MonoBehaviour
     {
       m_Reader = new ARClipFileReader(clip);
       fileSource = "";
-      Debug.Log("reading AR Clip data from asset");
     }
     else
     {
       m_Reader = new ARClipFileReader(fileSource);
-      Debug.Log("reading AR Clip data from file");
     }
   }
 
