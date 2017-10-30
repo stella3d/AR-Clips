@@ -4,26 +4,40 @@ using System.Collections;
 public class PoseVisuals : ARClipVisual
 {
   public GameObject deviceObject;
+  Vector3 m_Velocity;
 
-  int skipIndex = 1;
+  int skip;
+  int skipIndex;
+  int lerp = 0;
+
+  void Start()
+  {
+    skipIndex = m_Reader.updatesPerDeviceUpdate;
+  }
 	
   void Update()
   {
-    deviceObject.transform.rotation = m_Reader.rotation;
+    var trans = deviceObject.transform;
 
-    var skip = m_Reader.updatesPerDeviceUpdate;
+    skip = m_Reader.updatesPerDeviceUpdate;
     if (skip > 1)
     {
-      var trans = deviceObject.transform;
+      trans.position = Vector3.SmoothDamp(trans.position, m_Reader.position, ref m_Velocity, lerp);
+      trans.rotation = Quaternion.Lerp(trans.rotation, m_Reader.rotation, lerp + 0.25f);
 
-      trans.position = Vector3.Lerp(trans.position, m_Reader.position, skipIndex / skip + 3);
-      trans.rotation = Quaternion.Lerp(trans.rotation, m_Reader.rotation, skipIndex / skip + 3);
-
-      if (skipIndex < skip)
-        skipIndex++;
-      else if(skipIndex == skip)
-        skipIndex = 1;
+      if (skipIndex >= 1)
+        skipIndex--;
+      else if(skipIndex == 0)
+        skipIndex = m_Reader.updatesPerDeviceUpdate;
     }
+    else if (skip == 1)
+    {
+      trans.position = m_Reader.position;
+      trans.rotation = m_Reader.rotation;
+    }
+
+    if (lerp < 1)
+      lerp += 1 / skip;
   }
 }
 
