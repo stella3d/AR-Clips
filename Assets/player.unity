@@ -309,6 +309,11 @@ Prefab:
       propertyPath: updatesPerDeviceUpdate
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 114304748003231266, guid: ac5e3e068ff7f4e7f8947b0a4b5d48f4,
+        type: 2}
+      propertyPath: anchorMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: e381d940f0ee33445b16f286c175a437, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ac5e3e068ff7f4e7f8947b0a4b5d48f4, type: 2}
   m_IsPrefabParent: 0

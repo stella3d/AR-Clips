@@ -8,7 +8,8 @@ Material:
   m_PrefabInternal: {fileID: 0}
   m_Name: AdditiveLine
   m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: LINE_MODEL_SPACE LINE_PERSPECTIVE_WIDTH _ALPHABLEND_ON _EMISSION
+  m_ShaderKeywords: LINE_MODEL_SPACE LINE_PERSPECTIVE_WIDTH _ALPHAPREMULTIPLY_ON _EMISSION
+    _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
   m_LightmapFlags: 1
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -64,26 +65,26 @@ Material:
     - _Cutoff: 0.455
     - _DetailNormalMapScale: 1
     - _DstBlend: 10
-    - _GlossMapScale: 1
-    - _Glossiness: 0.5
+    - _GlossMapScale: 0.803
+    - _Glossiness: 0.448
     - _GlossyReflections: 1
     - _LineDepthScale: 1
-    - _Metallic: 0
-    - _Mode: 2
+    - _Metallic: 0.779
+    - _Mode: 3
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _Shininess: 0.078125
-    - _SmoothnessTextureChannel: 0
+    - _SmoothnessTextureChannel: 1
     - _SpecularHighlights: 1
-    - _SrcBlend: 5
+    - _SrcBlend: 1
     - _UVSec: 0
     - _WorldData: 0
     - _ZWrite: 0
     - _lineRadius: 0.5
     - _lineRadiusMin: 0
     m_Colors:
-    - _Color: {r: 0, g: 0.027648346, b: 0.1288076, a: 0.69}
-    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _Color: {r: 0, g: 0.027648346, b: 0.1288076, a: 0.29}
+    - _EmissionColor: {r: 0.1, g: 0.054777782, b: 0.07544445, a: 1}
     - _lineColor: {r: 0, g: 0.21379282, b: 1, a: 1}
     - _lineRadius: {r: 1, g: 0, b: 100, a: 1}
     - _lineSettings: {r: 0, g: 1, b: 0.5019608, a: 1}
