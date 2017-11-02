@@ -30,7 +30,6 @@ public class AnchorVisuals : ARClipVisual
         var positions = m_Reader.anchorPositions;
         var rotations = m_Reader.anchorRotations;
 
-        Debug.Log(m_Reader.anchorCount);
         for (int i = 0; i < positions.Length; i++)
         {
             if (m_Reader.anchorCount > anchorRenderers.Count)
