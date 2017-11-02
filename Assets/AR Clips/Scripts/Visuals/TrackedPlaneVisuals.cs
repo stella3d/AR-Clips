@@ -20,6 +20,7 @@ public class TrackedPlaneVisuals : ARClipVisual
     {
       var obj = new GameObject("plane outline");
       var render = obj.AddComponent<XRLineRenderer>();
+      render.loop = true;
       var materialCopy = new Material(lineMaterial);
       var color = materialCopy.color;
       color.r -= i / 4;
