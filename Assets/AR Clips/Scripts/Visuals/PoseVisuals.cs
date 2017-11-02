@@ -10,7 +10,7 @@ public class PoseVisuals : ARClipVisual
   int skipIndex;
   int lerp = 0;
 
-  void Start()
+  new void Start()
   {
     skipIndex = m_Reader.updatesPerDeviceUpdate;
   }

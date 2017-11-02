@@ -13,7 +13,7 @@ public class AnchorVisuals : ARClipVisual
   public MeshRenderer[] anchorRenderers;
   public GameObject[] anchorObjects;
 
-  void Start()
+  new void Start()
   {
     anchorObjects = new GameObject[64];
     anchorRenderers = new MeshRenderer[64];
@@ -40,7 +40,7 @@ public class AnchorVisuals : ARClipVisual
 
     for (int i = 0; i < positions.Length; i++)
     {
-      if (positions[i] != null && rotations[i] != null && anchorRenderers.Length > i)
+      if (anchorRenderers.Length > i)
       {
         anchorRenderers[i].enabled = true;
         var obj = anchorObjects[i];

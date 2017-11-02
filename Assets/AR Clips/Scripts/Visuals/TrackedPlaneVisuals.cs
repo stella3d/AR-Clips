@@ -11,7 +11,7 @@ public class TrackedPlaneVisuals : ARClipVisual
   public Vector3[][] m_PlanePoints;
   public List<XRLineRenderer> planeRenderers;
 
-  void Start()
+  new void Start()
   {
     base.Start();
     planeRenderers = new List<XRLineRenderer>();
