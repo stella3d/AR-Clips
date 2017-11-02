@@ -19,7 +19,13 @@ public class ARClipReader : MonoBehaviour
   public int planeCount;
   public int anchorCount;
 
-  public Vector3 position;
+    public int anchorPositionBytesRead;
+    public int anchorRotationBytesRead;
+
+    public int pointPositionBytesRead;
+    public int planePositionBytesRead;
+
+    public Vector3 position;
   public Quaternion rotation;
   public double timestamp;
   public float lightEstimate;
@@ -87,7 +93,12 @@ public class ARClipReader : MonoBehaviour
     }
 
     previousScrubPercent = scrubByPercent;
-  }
+
+        anchorPositionBytesRead = m_Reader.anchorPositionBytesRead;
+        anchorRotationBytesRead = m_Reader.anchorRotationBytesRead;
+        pointPositionBytesRead = m_Reader.pointPositionBytesRead;
+        planePositionBytesRead = m_Reader.planePositionBytesRead;
+    }
 
   void SeekToRoundedPercent()
   {

@@ -13,8 +13,14 @@ public class ARClipFileReader : IARClipReader
   public int planeCount;
   public int anchorCount;
 
-  // to support scrubbing 
-  public Dictionary<double, long> timePositions { get; private set; }
+    public int anchorPositionBytesRead;
+    public int anchorRotationBytesRead;
+
+    public int pointPositionBytesRead;
+    public int planePositionBytesRead;
+
+    // to support scrubbing 
+    public Dictionary<double, long> timePositions { get; private set; }
 
   // public members below all have data from platform's AR service
   public Vector3 position;
@@ -26,8 +32,11 @@ public class ARClipFileReader : IARClipReader
   public Vector3[] pointCloud = new Vector3[k_MaxPoints];
   [HideInInspector]
   public Vector3[][] planePolygons = new Vector3[k_MaxPlanes][];
-  [HideInInspector]
-  public Vector3[] anchorPositions = new Vector3[k_MaxAnchors];
+
+    [HideInInspector]
+    public Vector3[] anchorPositions = new Vector3[k_MaxAnchors];
+    protected Vector3[] previousAnchorPositions = new Vector3[k_MaxAnchors];
+
   [HideInInspector]
   public Quaternion[] anchorRotations = new Quaternion[k_MaxAnchors];
 
@@ -43,6 +52,9 @@ public class ARClipFileReader : IARClipReader
   MemoryStream m_Buffer;
   public Stream m_BaseStream;
   BinaryReader m_Stream;
+
+
+    public bool justSeeked = false;
 
   public ARClipFileReader(string fileSource) 
   {
@@ -84,7 +96,7 @@ public class ARClipFileReader : IARClipReader
   {
     m_FrameBeginStreamPosition = m_BaseStream.Position;
     if (m_BaseStream.Position >= m_BaseStream.Length)
-      return;
+        return;
 
     timestamp = m_Stream.ReadDouble();
     lightEstimate = m_Stream.ReadSingle();
@@ -97,6 +109,7 @@ public class ARClipFileReader : IARClipReader
     m_Stream.ReadChar();    
 
     TrackTime();
+    justSeeked = false;
   }
 
   void TrackTime()
@@ -128,6 +141,7 @@ public class ARClipFileReader : IARClipReader
     for (int i = 0; i < pointCount; i++)
     {
       Read(out pointCloud[i]);
+      pointPositionBytesRead += 12;
     }
 
     if (pointCount < pointCloud.Length)
@@ -147,24 +161,39 @@ public class ARClipFileReader : IARClipReader
       // TODO - don't allocate a new array here,  find a way to set length 
       planePolygons[i] = new Vector3[vertexCount];
 
-      for (int n = 0; n < vertexCount; n++)
-        Read(out planePolygons[i][n]);
+            for (int n = 0; n < vertexCount; n++)
+            {
+                planePositionBytesRead += 12;
+                Read(out planePolygons[i][n]);
+            }
     }
   }
 
-  void ReadAnchors()
-  {
-    anchorCount = m_Stream.ReadInt32();
-
-    if (anchorCount > 0)
+    void ReadAnchors()
     {
-      for (int i = 0; i < anchorCount; i++)
-      {
-        Read(out anchorPositions[i]);
-        Read(out anchorRotations[i]);
-      }
+        anchorCount = m_Stream.ReadInt32();
+
+        if (anchorCount > 0)
+        {
+            for (int i = 0; i < anchorCount; i++)
+            {
+                Vector3 vec;
+                Read(out vec);
+                if (Vector3.Distance(vec, previousAnchorPositions[i]) > 0.00001f && !justSeeked)
+                {
+                    Debug.Log("anchor moved: " + vec);
+                    anchorPositions[i] = vec;
+                }
+                //Read(out anchorPositions[i]);
+                anchorPositionBytesRead += 12;
+
+                Read(out anchorRotations[i]);
+                anchorRotationBytesRead += 16;
+            }
+
+            anchorPositions.CopyTo(previousAnchorPositions, 0);
+        }
     }
-  }
 
   void Read(out Vector3 vec)
   {
@@ -195,7 +224,8 @@ public class ARClipFileReader : IARClipReader
     Array.Clear(anchorPositions, 0, anchorPositions.Length);
     Array.Clear(anchorRotations, 0, anchorRotations.Length);
 
-    if(readFrame)
+    justSeeked = true;
+    if (readFrame)
       ReadFrame();
   }
 
