@@ -35,7 +35,7 @@ public class AnchorVisuals : ARClipVisual
             if (m_Reader.anchorCount > anchorRenderers.Count)
             {
                 Debug.Log("new anchor visual");
-                for (int n = anchorRenderers.Count; n < positions.Length; n++)
+                for (int n = anchorRenderers.Count; n < m_Reader.anchorCount; n++)
                 {
                     PlaceAnchorObject(positions[n], rotations[n]);
                 }
