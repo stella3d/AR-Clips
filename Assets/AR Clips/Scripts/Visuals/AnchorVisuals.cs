@@ -4,50 +4,66 @@ using System.Collections.Generic;
 
 public class AnchorVisuals : ARClipVisual
 {
-  [SerializeField]
-  Mesh m_PlaneMesh;
+    [SerializeField]
+    Mesh m_PlaneMesh;
 
-  public Material anchorMaterial;
-  public float scaling = 0.125f;
+    [SerializeField]
+    PrimitiveType m_PrimitiveType = PrimitiveType.Cube;
 
-  public MeshRenderer[] anchorRenderers;
-  public GameObject[] anchorObjects;
+    [SerializeField]
+    public Material anchorMaterial;
 
-  void Start()
-  {
-    anchorObjects = new GameObject[64];
-    anchorRenderers = new MeshRenderer[64];
+    [SerializeField]
+    public float scaling = 0.125f;
 
-    for (int i = 0; i < 64; i++)
+    public List<MeshRenderer> anchorRenderers;
+    public List<GameObject> anchorObjects;
+
+    new void Start()
     {
-      var obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
-      obj.transform.localScale *= scaling;
-      obj.name = "anchor representation";
-      anchorObjects[i] = obj;
-
-      anchorRenderers[i] = obj.GetComponent<MeshRenderer>();
-      anchorRenderers[i].enabled = false;
-
-      if (anchorMaterial != null)
-        anchorRenderers[i].material = anchorMaterial;
+        anchorObjects = new List<GameObject>();
+        anchorRenderers = new List<MeshRenderer>();
     }
-  }
 
-  void Update()
-  {
-    var positions = m_Reader.anchorPositions;
-    var rotations = m_Reader.anchorRotations;
-
-    for (int i = 0; i < positions.Length; i++)
+    void Update()
     {
-      if (positions[i] != null && rotations[i] != null && anchorRenderers.Length > i)
-      {
-        anchorRenderers[i].enabled = true;
-        var obj = anchorObjects[i];
-        obj.transform.SetPositionAndRotation(positions[i], rotations[i]);
-      }
+        var positions = m_Reader.anchorPositions;
+        var rotations = m_Reader.anchorRotations;
+
+        for (int i = 0; i < positions.Length; i++)
+        {
+            if (m_Reader.anchorCount > anchorRenderers.Count)
+            {
+                Debug.Log("new anchor visual");
+                for (int n = anchorRenderers.Count; n < m_Reader.anchorCount; n++)
+                {
+                    PlaceAnchorObject(positions[n], rotations[n]);
+                }
+            }
+
+            if (anchorRenderers.Count > i)
+            {
+                anchorRenderers[i].enabled = true;
+                var obj = anchorObjects[i];
+                obj.transform.SetPositionAndRotation(positions[i], rotations[i]);
+            }
+        }
     }
-  }
+
+    void PlaceAnchorObject(Vector3 position, Quaternion rotation)
+    {
+        var obj = GameObject.CreatePrimitive(m_PrimitiveType);
+        obj.transform.SetPositionAndRotation(position, rotation);
+        obj.transform.localScale *= scaling;
+        obj.name = "anchor representation";
+
+        var renderer = obj.GetComponent<MeshRenderer>();
+        if (anchorMaterial != null)
+            renderer.material = anchorMaterial;
+
+        anchorObjects.Add(obj);
+        anchorRenderers.Add(renderer);
+    }
 
 }
 

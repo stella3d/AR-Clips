@@ -10,7 +10,7 @@ public class PointCloudVisuals : ARClipVisual
   const int k_MaxPoints = 1920 ;
   int[] m_Indices = new int[k_MaxPoints];
 
-  void Start()
+  new void Start()
   {
     base.Start();
     if (m_Mesh == null)
