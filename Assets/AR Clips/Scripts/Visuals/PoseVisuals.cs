@@ -23,7 +23,7 @@ public class PoseVisuals : ARClipVisual
     if (skip > 1)
     {
       trans.position = Vector3.SmoothDamp(trans.position, m_Reader.position, ref m_Velocity, lerp);
-      trans.rotation = Quaternion.Lerp(trans.rotation, m_Reader.rotation, lerp + 0.25f);
+      trans.rotation = Quaternion.Lerp(trans.rotation, m_Reader.rotation, lerp + 0.1f);
 
       if (skipIndex >= 1)
         skipIndex--;
