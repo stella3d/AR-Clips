@@ -33,7 +33,7 @@ public class ARClipFileReader : IARClipReader
 
   const int k_MaxPlanes = 512;        
   const int k_MaxAnchors = 512;        
-  const int k_MaxPoints = 15360;
+  const int k_MaxPoints = 2048;
 
   long m_FrameBeginStreamPosition;
   double m_LastPointCloudTimestamp;
@@ -132,8 +132,11 @@ public class ARClipFileReader : IARClipReader
 
     if (pointCount < pointCloud.Length)
     {
-      var remaining = pointCloud.Length - pointCount;
-      Array.Clear(pointCloud, pointCount, remaining);
+      // instead of clearing the array, set the remaining point to last one
+      for (int n = pointCount; n < pointCloud.Length; n++)
+      {
+        pointCloud[n] = pointCloud[pointCount - 1];
+      }
     }
   }
 
