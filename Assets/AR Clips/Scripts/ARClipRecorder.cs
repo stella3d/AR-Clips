@@ -60,8 +60,6 @@ namespace ARcorder
     void OnApplicationPause()
     {
       m_Stream.Flush();
-      m_Buffer.Flush();
-      m_GzipStream.Flush();
       m_File.Flush();
     }
 
