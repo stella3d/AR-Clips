@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEditor;
 
 public class ARClipReader : MonoBehaviour
 {
@@ -53,7 +52,7 @@ public class ARClipReader : MonoBehaviour
     if (clip != null)
       m_Reader = new ARClipFileReader(clip);
     else
-      Debug.LogWarning("no AR Clip asset assigned to reader component!");
+      Debug.Log("no AR Clip asset assigned to reader component!");
   }
 
   void Update () 

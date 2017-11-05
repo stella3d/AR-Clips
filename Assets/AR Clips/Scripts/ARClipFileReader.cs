@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.IO.Compression;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -33,31 +34,40 @@ public class ARClipFileReader : IARClipReader
 
   const int k_MaxPlanes = 512;        
   const int k_MaxAnchors = 512;        
-  const int k_MaxPoints = 2048;
+  const int k_MaxPoints = 15360;
+  const int k_GzipBufferBytes = 65536;
 
   long m_FrameBeginStreamPosition;
   double m_LastPointCloudTimestamp;
   double m_FirstPointCloudTimeStamp;
 
   FileStream m_File;
-  MemoryStream m_Buffer;
+  MemoryStream m_DataStream;
   public Stream m_BaseStream;
+  BufferedStream m_Buffer;
+  GZipStream m_GzipStream;
   BinaryReader m_Stream;
 
   public ARClipFileReader(string fileSource) 
   {
     m_File = new FileStream(fileSource, FileMode.Open);
-    m_BaseStream = m_File;
-    m_Stream = new BinaryReader(m_File);
+    m_GzipStream = new GZipStream(m_File, CompressionMode.Compress);
+    m_Buffer = new BufferedStream(m_GzipStream, k_GzipBufferBytes);
+    m_BaseStream = m_Buffer;
+    m_Stream = new BinaryReader(m_Buffer);
+
     timePositions = new Dictionary<double, long>();
   }
 
   public ARClipFileReader(ARClip clip) 
   {
     this.clip = clip;
-    m_Buffer = new MemoryStream(clip.data);
+    m_DataStream = new MemoryStream(clip.data);
+    m_GzipStream = new GZipStream(m_DataStream, CompressionMode.Decompress);
+    m_Buffer = new BufferedStream(m_GzipStream, k_GzipBufferBytes);
     m_BaseStream = m_Buffer;
     m_Stream = new BinaryReader(m_Buffer);
+
     timePositions = new Dictionary<double, long>();
   }
 
@@ -111,9 +121,9 @@ public class ARClipFileReader : IARClipReader
     if(!timePositions.TryGetValue(timestamp, out tempPos))
     {
       timePositions.Add(timestamp, m_FrameBeginStreamPosition);
-      totalFrameCount++;
     }
 
+    totalFrameCount++;
   }
 
   void ReadPose()

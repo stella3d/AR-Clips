@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.IO;
+using System.IO.Compression;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,6 +17,8 @@ namespace ARcorder
     const string k_FileExtension = ".arclip";
 
     FileStream m_File;
+    GZipStream m_GzipStream;
+    BufferedStream m_Buffer;
     BinaryWriter m_Stream;
 
     double m_LastCloudTimestamp;
@@ -32,7 +35,10 @@ namespace ARcorder
       var path = Path.Combine(Application.persistentDataPath, fileName);
 
       m_File = new FileStream(path, FileMode.OpenOrCreate);
-      m_Stream = new BinaryWriter(m_File);
+      m_GzipStream = new GZipStream(m_File, CompressionMode.Compress);
+      m_Buffer = new BufferedStream(m_GzipStream, 65536);
+      m_Stream = new BinaryWriter(m_GzipStream);
+
       m_Controller = gameObject.GetComponent<ArRecordingController>();
   	}
 
@@ -56,6 +62,19 @@ namespace ARcorder
         RecordFrame();
       }
   	}
+
+    void OnApplicationPause()
+    {
+      m_Stream.Flush();
+      m_Buffer.Flush();
+      m_GzipStream.Flush();
+      m_File.Flush();
+    }
+
+    void OnApplicationSuspend()
+    {
+      OnApplicationPause();
+    }
 
     /*
      * In the stream protocol, there are only arrays & primitives.
