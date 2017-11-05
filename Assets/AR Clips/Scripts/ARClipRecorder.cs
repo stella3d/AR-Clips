@@ -57,6 +57,19 @@ namespace ARcorder
       }
   	}
 
+    void OnApplicationPause()
+    {
+      m_Stream.Flush();
+      m_Buffer.Flush();
+      m_GzipStream.Flush();
+      m_File.Flush();
+    }
+
+    void OnApplicationSuspend()
+    {
+      OnApplicationPause();
+    }
+
     /*
      * In the stream protocol, there are only arrays & primitives.
      * Every array is preceded by an int of the array length.
