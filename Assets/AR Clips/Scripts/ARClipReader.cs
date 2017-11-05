@@ -1,17 +1,16 @@
 ﻿using UnityEngine;
+using UnityEditor;
 
 public class ARClipReader : MonoBehaviour
 {
   // increase this number to slow down playback
   public int updatesPerDeviceUpdate;
   public ARClip clip;
-  public string fileSource;
 
   [Range(0.0f, 1.0f)]
   public float scrubByPercent;
   float previousScrubPercent;
 
- 
   // these are just informational / to look at in the inspector
   public double elapsedSeconds;
   public int updateCount;
@@ -52,29 +51,30 @@ public class ARClipReader : MonoBehaviour
   void Start () 
   {
     if (clip != null)
-    {
       m_Reader = new ARClipFileReader(clip);
-      fileSource = "";
-    }
     else
-    {
-      m_Reader = new ARClipFileReader(fileSource);
-    }
+      Debug.LogWarning("no AR Clip asset assigned to reader component!");
   }
 
   void Update () 
   {
     if (scrubByPercent != previousScrubPercent)
     {
-      Debug.Log("seeking to: " + scrubByPercent); 
       SeekToRoundedPercent();
     }
+    previousScrubPercent = scrubByPercent;
 
+    // TODO - replace this with time-normalized playback.
     m_FrameSkipIndex++;
     if (m_FrameSkipIndex % updatesPerDeviceUpdate == 0)
     {
       m_Reader.ReadFrame();
+      CopyToInspector();
+    }
+  }
 
+  void CopyToInspector()
+  {
       elapsedSeconds = m_Reader.elapsed;
       updateCount = m_Reader.totalFrameCount;
       timestamp = m_Reader.timestamp;
@@ -84,9 +84,6 @@ public class ARClipReader : MonoBehaviour
       pointCount = m_Reader.pointCount;
       planeCount = m_Reader.planeCount;
       anchorCount = m_Reader.anchorCount;
-    }
-
-    previousScrubPercent = scrubByPercent;
   }
 
   void SeekToRoundedPercent()
