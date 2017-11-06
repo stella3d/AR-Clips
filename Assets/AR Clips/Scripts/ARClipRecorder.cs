@@ -16,7 +16,7 @@ namespace ARcorder
     const string k_FileExtension = ".arclip";
 
     FileStream m_File;
-    BinaryWriter m_Stream;
+    protected BinaryWriter m_Stream;
 
     double m_LastCloudTimestamp;
 
@@ -118,7 +118,7 @@ namespace ARcorder
 
     void WritePointCloudData()
     {
-      m_Stream.Write(Frame.PointCloud.PointCount);
+      WriteArrayLength(Frame.PointCloud.PointCount);
 
       for (int i = 0; i < Frame.PointCloud.PointCount; i++)
       {
@@ -131,14 +131,14 @@ namespace ARcorder
       var planes = m_Controller.trackedPlanes;
       var planeCount = planes.Count;
 
-      m_Stream.Write(planeCount);
+      WriteArrayLength(planeCount);
 
       for (int i = 0; i < planeCount; i++)
       {
         planes[i].GetBoundaryPolygon(ref m_PlaneBoundaryCache);
         var pointCount = m_PlaneBoundaryCache.Count;
 
-        m_Stream.Write(pointCount);
+        WriteArrayLength(pointCount);
 
         for (int n = 0; n < pointCount; n++)
         {
@@ -151,7 +151,7 @@ namespace ARcorder
     {
       var anchors = m_Controller.anchors;
 
-      m_Stream.Write(anchors.Count);
+      WriteArrayLength(anchors.Count);
 
       for (int i = 0; i < anchors.Count; i++)
       {
@@ -161,14 +161,19 @@ namespace ARcorder
       }
     }
 
-    void WriteVector3(Vector3 vec)
+    protected virtual void WriteArrayLength(int length)
+    {
+      m_Stream.Write(length);
+    }
+
+    protected virtual void WriteVector3(Vector3 vec)
     {
       m_Stream.Write(vec.x);
       m_Stream.Write(vec.y);
       m_Stream.Write(vec.z);
     }
 
-    void WriteQuaternion(Quaternion quat)
+    protected virtual void WriteQuaternion(Quaternion quat)
     {
       m_Stream.Write(quat.w);
       m_Stream.Write(quat.x);

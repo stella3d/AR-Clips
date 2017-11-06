@@ -171,14 +171,14 @@ public class ARClipFileReader : IARClipReader
     }
   }
 
-  void Read(out Vector3 vec)
+  protected virtual void Read(out Vector3 vec)
   {
     vec.x = m_Stream.ReadSingle();
     vec.y = m_Stream.ReadSingle();
     vec.z = m_Stream.ReadSingle();
   }
 
-  void Read(out Quaternion quat)
+  protected virtual void Read(out Quaternion quat)
   {
     quat.w = m_Stream.ReadSingle();
     quat.x = m_Stream.ReadSingle();
