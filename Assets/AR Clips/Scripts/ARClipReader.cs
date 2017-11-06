@@ -107,7 +107,10 @@ public class ARClipReader : MonoBehaviour
   double GetNormalizedTime(int index)
   {
     var times = m_Reader.clip.timeStamps;
-    return times[index] - times[0];
+    if (index < times.Length)
+      return times[index] - times[0];
+    else
+      return (double)0;
   }
 
   double GetNormalizedNextTime()
