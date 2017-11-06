@@ -1,10 +1,10 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
+﻿using System.IO;
 using UnityEngine;
 
 public class HalfPrecisionClipReader : ARClipFileReader
 {
+	public HalfPrecisionClipReader(ARClip clip): base(clip) {}
+
 	protected override void Read(out Vector3 vec)
 	{
 		vec.x = m_Stream.ReadShortFloat();
@@ -14,9 +14,9 @@ public class HalfPrecisionClipReader : ARClipFileReader
 
 	protected override void Read(out Quaternion quat)
 	{
-		quat.w = m_Stream.ReadShortFloatOneClamped();
-		quat.x = m_Stream.ReadShortFloatOneClamped();
-		quat.y = m_Stream.ReadShortFloatOneClamped();
-		quat.z = m_Stream.ReadShortFloatOneClamped();
+		quat.w = m_Stream.ReadShortFloatOne();
+		quat.x = m_Stream.ReadShortFloatOne();
+		quat.y = m_Stream.ReadShortFloatOne();
+		quat.z = m_Stream.ReadShortFloatOne();
 	}
 }

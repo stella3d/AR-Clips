@@ -44,7 +44,7 @@ public class ARClipFileReader : IARClipReader
   FileStream m_File;
   MemoryStream m_Buffer;
   public Stream m_BaseStream;
-  BinaryReader m_Stream;
+  protected BinaryReader m_Stream;
 
   public ARClipFileReader(string fileSource) 
   {

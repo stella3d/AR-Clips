@@ -4,8 +4,9 @@ using UnityEngine.TestTools;
 using NUnit.Framework;
 using System;
 using System.Collections;
-using System.IO;
 
+
+/* 
 public class EncodingTests 
 {
 	const int arraySize = 10000;
@@ -116,6 +117,8 @@ public class EncodingTests
 
 }
 
+*/
+
 /* 
 public struct ShortVector3()
 {
@@ -148,40 +151,3 @@ public struct ShortQuaternion()
 	}
 }
 */
-
-public static class Encode
-{
-	public static short Float32ToShortFloat(float f)
-	{
-		return (short)(f * 1000f);
-	}
-
-	public static float ShortFloatToFloat32(short s)
-	{
-		return (float)((float)s / 1000f);
-	}
-
-	const double floatToShort1Ratio = 0.0000305185;
-
-	public static short ShortFloat1Clamped(float f)
-	{
-		return (short)(f * 32767f);
-	}
-
-}
-
-public static class EncodingExtensions
-{
-	static short m_ShortFloatCache;
-
-	public static void WriteShortFloat(this BinaryWriter writer, float f)
-	{
-		short s = Encode.Float32ToShortFloat(f);
-		//writer.Write(); 
-	}
-
-	public static float ReadShortFloat(this BinaryReader reader)
-	{
-		return Encode.ShortFloatToFloat32(reader.ReadInt16());
-	}
-}
