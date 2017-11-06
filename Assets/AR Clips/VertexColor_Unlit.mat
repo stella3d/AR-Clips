@@ -122,7 +122,7 @@ Material:
     - _WorldData: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.02014756, g: 1, b: 0.95978004, a: 1}
+    - _Color: {r: 0, g: 1, b: 0.97989917, a: 1}
     - _EmisColor: {r: 0.2, g: 0.2, b: 0.2, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _ReflectColor: {r: 1, g: 1, b: 1, a: 0.5}

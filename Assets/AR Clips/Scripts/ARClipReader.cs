@@ -6,6 +6,7 @@ using Debug = UnityEngine.Debug;
 public class ARClipReader : MonoBehaviour
 {
   // increase this number to slow down playback
+  public bool pauseWhenUnfocused = true;
   public int updatesPerDeviceUpdate;
   public ARClip clip;
 
@@ -112,6 +113,23 @@ public class ARClipReader : MonoBehaviour
   double GetNormalizedNextTime()
   {
     return GetNormalizedTime(updateCount + 1);
+  }
+
+  void OnApplicationFocus(bool hasFocus)
+  {
+    if (pauseWhenUnfocused)
+    {
+      if (!hasFocus)
+      {
+        timer.Stop();
+        Time.timeScale = 0f;
+      }
+      else if (pauseWhenUnfocused)
+      {
+        timer.Start();
+        Time.timeScale = 1f;
+      }
+    }
   }
 
   void CopyToInspector()

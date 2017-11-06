@@ -8,7 +8,7 @@ Material:
   m_PrefabInternal: {fileID: 0}
   m_Name: AlphaLineColor4
   m_Shader: {fileID: 4800000, guid: d2d82e816970e9849bc93f1842c33050, type: 3}
-  m_ShaderKeywords: LINE_MODEL_SPACE LINE_PERSPECTIVE_WIDTH
+  m_ShaderKeywords: LINE_PERSPECTIVE_WIDTH LINE_WORLD_SPACE
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -71,10 +71,10 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
-    - _WorldData: 0
+    - _WorldData: 1
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.5013065, g: 0.1839559, b: 1, a: 0.51}
+    - _Color: {r: 0.5013065, g: 0.1839559, b: 1, a: 0.16}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _lineRadius: {r: 1, g: 0, b: 100, a: 1}
-    - _lineSettings: {r: 0, g: 1, b: 0.5, a: 1}
+    - _lineRadius: {r: 0.1, g: 0.1, b: 100, a: 1}
+    - _lineSettings: {r: 0.108, g: 1, b: 0.062, a: 1}
