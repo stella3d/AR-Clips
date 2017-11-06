@@ -8,8 +8,19 @@ public class PointCloudVisuals : ARClipVisual
   [SerializeField]
   Mesh m_Mesh;
 
+  Mesh[] m_MeshBuffer = new Mesh[200];
+
   const int k_MaxPoints = 1920 ;
   int[] m_Indices = new int[k_MaxVertices];
+
+  const int k_MaxVertices = 8192;
+
+  Vector3[] previousCloud = new Vector3[500];
+  int previousPointCount;
+  Vector3[] concatCloud;
+
+  public int concatIndex;
+  public int meshBufferIndex;
 
   new void Start()
   {
@@ -19,16 +30,21 @@ public class PointCloudVisuals : ARClipVisual
 
     for (int i = 0; i < k_MaxVertices; i++)
         m_Indices[i] = i;
+
+    for (int i = 0; i < m_MeshBuffer.Length; i++)
+    {
+      var obj = new GameObject("mesh points " + i);
+      var meshFilter = obj.AddComponent<MeshFilter>();
+
+      //m_MeshBuffer[i] = new Mesh();
+      meshFilter.mesh = new Mesh();
+      m_MeshBuffer[i] = (Mesh)Instantiate(meshFilter.mesh);
+      m_MeshBuffer[i].vertices = new Vector3[k_MaxVertices];
+      m_MeshBuffer[i].SetIndices(m_Indices, MeshTopology.Points, 0);
+    }
+    concatCloud = m_MeshBuffer[0].vertices;
   }
-	
-  const int k_MaxVertices = 65534;
 
-  Vector3[] previousCloud = new Vector3[500];
-  int previousPointCount;
-  Vector3[] concatCloud = new Vector3[65534];
-
-  public int concatIndex;
-  
   void Update()
   {
       var pointCloud = m_Reader.pointCloud;
@@ -43,6 +59,8 @@ public class PointCloudVisuals : ARClipVisual
         else
         {
             concatIndex = 0;
+            meshBufferIndex++;
+            concatCloud = m_MeshBuffer[meshBufferIndex].vertices;
             pointCloud.CopyTo(concatCloud, concatIndex);
             concatIndex += m_Reader.pointCount;
         }
