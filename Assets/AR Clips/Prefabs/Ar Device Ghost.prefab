@@ -36,86 +36,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!1 &1698593118039578
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 4424059007124694}
-  - component: {fileID: 20905364699582246}
-  - component: {fileID: 124734419899710146}
-  - component: {fileID: 81540123874230406}
-  m_Layer: 0
-  m_Name: Main Camera
-  m_TagString: MainCamera
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!4 &4334987326466004
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1313301729563068}
-  m_LocalRotation: {x: 0.2271864, y: 0.42647788, z: -0.10572221, w: 0.86909485}
-  m_LocalPosition: {x: -1.6796603, y: 0.45625797, z: 3.8226857}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.1438, y: 0.0695, z: 0.0085}
-  m_Children:
-  - {fileID: 4424059007124694}
+  m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &4424059007124694
-Transform:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1698593118039578}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.8, y: 0.8, z: -36}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 4334987326466004}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!20 &20905364699582246
-Camera:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1698593118039578}
-  m_Enabled: 1
-  serializedVersion: 2
-  m_ClearFlags: 2
-  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
-  m_NormalizedViewPortRect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
-  near clip plane: 0.01
-  far clip plane: 1000
-  field of view: 60
-  orthographic: 0
-  orthographic size: 3
-  m_Depth: -1
-  m_CullingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_RenderingPath: -1
-  m_TargetTexture: {fileID: 0}
-  m_TargetDisplay: 0
-  m_TargetEye: 3
-  m_HDR: 1
-  m_AllowMSAA: 1
-  m_ForceIntoRT: 0
-  m_OcclusionCulling: 1
-  m_StereoConvergence: 10
-  m_StereoSeparation: 0.022
 --- !u!23 &23727722705195274
 MeshRenderer:
   m_ObjectHideFlags: 1
@@ -157,13 +90,6 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1313301729563068}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!81 &81540123874230406
-AudioListener:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1698593118039578}
-  m_Enabled: 1
 --- !u!108 &108238225247033390
 Light:
   m_ObjectHideFlags: 1
@@ -174,7 +100,7 @@ Light:
   serializedVersion: 8
   m_Type: 1
   m_Color: {r: 1, g: 0.99897623, b: 0.93836063, a: 1}
-  m_Intensity: 0.25495368
+  m_Intensity: 0.3125823
   m_Range: 2
   m_SpotAngle: 30
   m_CookieSize: 10
@@ -211,19 +137,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 772c6f48d6ba04448a95d86740307ec5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  updatesPerDeviceUpdate: 3
+  updatesPerDeviceUpdate: 12
   clip: {fileID: 11400000, guid: d88a4c89b8d7f4af98614bddb855dda5, type: 2}
-  fileSource: 
-  scrubByPercent: 0.517
-  elapsedSeconds: 140.66748024197295
-  updateCount: 1258
-  pointCount: 99
-  planeCount: 2
-  anchorCount: 12
-  position: {x: -1.6555021, y: 0.46495974, z: 3.8296998}
-  rotation: {x: 0.21850859, y: 0.44457307, z: -0.106027685, w: 0.86218727}
-  timestamp: 191941.098931841
-  lightEstimate: 0.147183
+  scrubByPercent: 0.01
+  elapsedSeconds: 0
+  editorElapsedSeconds: 0
+  editorTimeOffset: 0
+  updateCount: 0
+  pointCount: 0
+  planeCount: 0
+  anchorCount: 0
+  position: {x: 0, y: 0, z: 0}
+  previousPosition: {x: -1.2322632, y: 0.4411319, z: -2.6558561}
+  rotation: {x: 0, y: 0, z: 0, w: 0}
+  previousRotation: {x: 0.42439148, y: -0.5077275, z: 0.3298835, w: 0.67326176}
+  timestamp: 0
+  lightEstimate: 0
+  nextTimestamp: 105.55038249597419
 --- !u!114 &114304748003231266
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -237,6 +167,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Reader: {fileID: 114173141868680476}
   m_PlaneMesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+  m_PrimitiveType: 3
   anchorMaterial: {fileID: 2100000, guid: e381d940f0ee33445b16f286c175a437, type: 2}
   scaling: 0.125
   anchorRenderers:
@@ -248,119 +179,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   anchorObjects:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -381,7 +200,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Reader: {fileID: 114173141868680476}
-  light: {fileID: 108238225247033390}
   sensitivity: 2
 --- !u!114 &114771102839937006
 MonoBehaviour:
@@ -396,6 +214,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Reader: {fileID: 114173141868680476}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+  concatIndex: 34081
 --- !u!114 &114899108407080612
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -411,8 +230,8 @@ MonoBehaviour:
   m_PlaneMesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
   lineMaterial: {fileID: 2100000, guid: 4a10e4f88372c8d488aaeb8a2a406e04, type: 2}
   planeRenderers:
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 114765314054555300, guid: 55795790d89ec44449d9a5251cb8bf39, type: 2}
+  - {fileID: 114674065404694470, guid: 54ceae6a16dfb4886bbb4c20a1b2d4aa, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -442,13 +261,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Reader: {fileID: 114173141868680476}
   deviceObject: {fileID: 1313301729563068}
---- !u!124 &124734419899710146
-Behaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1698593118039578}
-  m_Enabled: 0
+  skip: 0
+  lerp: 1
+  timeDiff: 0.16657606299850158
 --- !u!135 &135696462429352096
 SphereCollider:
   m_ObjectHideFlags: 1

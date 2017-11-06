@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using UnityEngine;
-using UnityEditor;
 using Debug = UnityEngine.Debug;
 
 public class ARClipReader : MonoBehaviour
@@ -27,6 +26,7 @@ public class ARClipReader : MonoBehaviour
   public Vector3 position;
   public Vector3 previousPosition;
   public Quaternion rotation;
+  public Quaternion previousRotation;
   public double timestamp;
   public float lightEstimate;
 
@@ -95,6 +95,7 @@ public class ARClipReader : MonoBehaviour
     if(nextTimestamp - Time.deltaTime <= editorElapsedSeconds)
     {
       previousPosition = position;
+      previousRotation = rotation;
       m_Reader.ReadFrame();
       CopyToInspector();
       nextTimestamp = GetNormalizedNextTime();
@@ -102,10 +103,15 @@ public class ARClipReader : MonoBehaviour
     
   }
 
-  double GetNormalizedNextTime()
+  double GetNormalizedTime(int index)
   {
     var times = m_Reader.clip.timeStamps;
-    return times[updateCount + 1] - times[0];
+    return times[index] - times[0];
+  }
+
+  double GetNormalizedNextTime()
+  {
+    return GetNormalizedTime(updateCount + 1);
   }
 
   void CopyToInspector()
@@ -130,11 +136,11 @@ public class ARClipReader : MonoBehaviour
     m_Reader.totalFrameCount = clamped;
     nextTimestampIndex = m_Reader.totalFrameCount;
     //timestamp = m_Reader.clip.timeStamps[nextTimestampIndex - 1];
-    nextTimestamp = m_Reader.clip.timeStamps[nextTimestampIndex] - clip.timeStamps[0];
+    nextTimestamp = GetNormalizedTime(nextTimestampIndex);
     
     timer.Reset();
     timer.Start();
-    editorTimeOffset = (double)(clip.timeStamps[clamped] - clip.timeStamps[0]);
+    editorTimeOffset = GetNormalizedTime(clamped);
   }
 
 }
