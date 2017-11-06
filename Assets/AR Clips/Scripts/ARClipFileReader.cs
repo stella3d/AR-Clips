@@ -39,6 +39,8 @@ public class ARClipFileReader : IARClipReader
   double m_LastPointCloudTimestamp;
   double m_FirstPointCloudTimeStamp;
 
+  public double nextTimestamp;
+
   FileStream m_File;
   MemoryStream m_Buffer;
   public Stream m_BaseStream;
@@ -109,11 +111,9 @@ public class ARClipFileReader : IARClipReader
     // link this timestamp to the stream position before the frame
     long tempPos;
     if(!timePositions.TryGetValue(timestamp, out tempPos))
-    {
       timePositions.Add(timestamp, m_FrameBeginStreamPosition);
-      totalFrameCount++;
-    }
 
+    totalFrameCount++;
   }
 
   void ReadPose()
@@ -121,6 +121,8 @@ public class ARClipFileReader : IARClipReader
     Read(out position);
     Read(out rotation);
   }
+
+  int m_PreviousPointCount;
 
   void ReadPointCloud()
   {

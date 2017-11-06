@@ -1,5 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Diagnostics;
+using UnityEngine;
 using UnityEditor;
+using Debug = UnityEngine.Debug;
 
 public class ARClipReader : MonoBehaviour
 {
@@ -13,12 +16,14 @@ public class ARClipReader : MonoBehaviour
 
   // these are just informational / to look at in the inspector
   public double elapsedSeconds;
+  public double editorElapsedSeconds;
   public int updateCount;
   public int pointCount;
   public int planeCount;
   public int anchorCount;
 
   public Vector3 position;
+  public Vector3 previousPosition;
   public Quaternion rotation;
   public double timestamp;
   public float lightEstimate;
@@ -44,6 +49,13 @@ public class ARClipReader : MonoBehaviour
   }
 
   int m_FrameSkipIndex;
+  int nextTimestampIndex;
+  double beginningTime;
+  double beginningDeviceTime;
+  double lastTimestamp;
+  public double nextTimestamp;
+
+  public Stopwatch timer = new Stopwatch();
 
   // our actual reading all goes on in here
   ARClipFileReader m_Reader;
@@ -54,10 +66,23 @@ public class ARClipReader : MonoBehaviour
       m_Reader = new ARClipFileReader(clip);
     else
       Debug.LogWarning("no AR Clip asset assigned to reader component!");
+
+    beginningDeviceTime = m_Reader.clip.timeStamps[0];
+    
+    updateCount = -1;  
+    previousPosition = gameObject.transform.position;
+    timer.Start();
   }
 
   void Update () 
   {
+    if (updateCount == -1)
+    {      
+      timer.Reset();
+      timer.Start();
+    }
+    
+    editorElapsedSeconds = (double)timer.ElapsedMilliseconds / 1000;
     if (scrubByPercent != previousScrubPercent)
     {
       SeekToRoundedPercent();
@@ -65,12 +90,20 @@ public class ARClipReader : MonoBehaviour
     previousScrubPercent = scrubByPercent;
 
     // TODO - replace this with time-normalized playback.
-    m_FrameSkipIndex++;
-    if (m_FrameSkipIndex % updatesPerDeviceUpdate == 0)
+    if(elapsedSeconds - Time.deltaTime <= editorElapsedSeconds)
     {
+      previousPosition = position;
       m_Reader.ReadFrame();
       CopyToInspector();
+      nextTimestamp = GetNormalizedNextTime();
     }
+    
+  }
+
+  double GetNormalizedNextTime()
+  {
+    var times = m_Reader.clip.timeStamps;
+    return times[updateCount + 1] - times[0];
   }
 
   void CopyToInspector()
@@ -93,6 +126,7 @@ public class ARClipReader : MonoBehaviour
 
     m_Reader.SeekToPosition(clip.timeStampPositions[clamped]);
     m_Reader.totalFrameCount = clamped;
+    nextTimestampIndex = m_Reader.totalFrameCount;
   }
 
 }
