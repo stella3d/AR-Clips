@@ -17,6 +17,8 @@ public class ARClipReader : MonoBehaviour
   // these are just informational / to look at in the inspector
   public double elapsedSeconds;
   public double editorElapsedSeconds;
+  public double editorTimeOffset;
+
   public int updateCount;
   public int pointCount;
   public int planeCount;
@@ -74,15 +76,15 @@ public class ARClipReader : MonoBehaviour
     timer.Start();
   }
 
-  void Update () 
+  void FixedUpdate () 
   {
     if (updateCount == -1)
     {      
       timer.Reset();
       timer.Start();
     }
-    
-    editorElapsedSeconds = (double)timer.ElapsedMilliseconds / 1000;
+
+    editorElapsedSeconds = (double)((double)(timer.ElapsedMilliseconds / (double)1000) + editorTimeOffset);
     if (scrubByPercent != previousScrubPercent)
     {
       SeekToRoundedPercent();
@@ -90,7 +92,7 @@ public class ARClipReader : MonoBehaviour
     previousScrubPercent = scrubByPercent;
 
     // TODO - replace this with time-normalized playback.
-    if(elapsedSeconds - Time.deltaTime <= editorElapsedSeconds)
+    if(nextTimestamp - Time.deltaTime <= editorElapsedSeconds)
     {
       previousPosition = position;
       m_Reader.ReadFrame();
@@ -127,6 +129,12 @@ public class ARClipReader : MonoBehaviour
     m_Reader.SeekToPosition(clip.timeStampPositions[clamped]);
     m_Reader.totalFrameCount = clamped;
     nextTimestampIndex = m_Reader.totalFrameCount;
+    //timestamp = m_Reader.clip.timeStamps[nextTimestampIndex - 1];
+    nextTimestamp = m_Reader.clip.timeStamps[nextTimestampIndex] - clip.timeStamps[0];
+    
+    timer.Reset();
+    timer.Start();
+    editorTimeOffset = (double)(clip.timeStamps[clamped] - clip.timeStamps[0]);
   }
 
 }
