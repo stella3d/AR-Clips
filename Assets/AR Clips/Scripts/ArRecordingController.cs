@@ -4,7 +4,7 @@ using UnityEngine.Rendering;
 using GoogleARCore;
 using GoogleARCore.HelloAR;
 
-namespace ARcorder
+namespace ARClips
 {
     public class ArRecordingController : MonoBehaviour
     {

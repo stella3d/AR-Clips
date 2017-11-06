@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using GoogleARCore;
 
-namespace ARcorder
+namespace ARClips
 {
   public class ARClipRecorder : MonoBehaviour 
   {

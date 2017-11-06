@@ -1,14 +1,15 @@
 ﻿using UnityEngine;
 
-public class ARClipVisual : MonoBehaviour
+namespace  ARClips
 {
-  [SerializeField]
-  protected ARClipReader m_Reader;
-
-  protected void Start()
+  public class ARClipVisual : MonoBehaviour
   {
-    if (m_Reader == null)
-      m_Reader = GetComponent<ARClipReader>();
+    protected ARClipReader m_Reader;
+
+    protected void Start()
+    {
+      if (m_Reader == null)
+        m_Reader = GetComponent<ARClipReader>();
+    }
   }
 }
-

@@ -1,20 +1,21 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-[RequireComponent(typeof(Light))]
-public class LightEstimateVisuals : ARClipVisual
+namespace ARClips
 {
-  Light m_Light;
-  public float sensitivity = 2f;
-
-  void Start()
+  [RequireComponent(typeof(Light))]
+  public class LightEstimateVisuals : ARClipVisual
   {
-    m_Light = GetComponent<Light>();
-  }
+    Light m_Light;
+    public float sensitivity = 2f;
 
-  void Update()
-  {
-    m_Light.intensity = m_Reader.lightEstimate * sensitivity;
+    void Start()
+    {
+      m_Light = GetComponent<Light>();
+    }
+
+    void Update()
+    {
+      m_Light.intensity = m_Reader.lightEstimate * sensitivity;
+    }
   }
 }
-

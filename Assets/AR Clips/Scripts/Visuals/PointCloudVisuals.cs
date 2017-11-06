@@ -3,58 +3,79 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
-public class PointCloudVisuals : ARClipVisual
+namespace ARClips
 {
-  [SerializeField]
-  Mesh m_Mesh;
-
-  const int k_MaxPoints = 1920 ;
-  int[] m_Indices = new int[k_MaxVertices];
-
-  new void Start()
+  public class PointCloudVisuals : ARClipVisual
   {
-    base.Start();
-    if (m_Mesh == null)
-      m_Mesh = GetComponent<MeshFilter>().mesh;
+    [SerializeField]
+    Mesh m_Mesh;
 
-    for (int i = 0; i < k_MaxVertices; i++)
-        m_Indices[i] = i;
-  }
-	
-  const int k_MaxVertices = 65534;
+    Mesh[] m_MeshBuffer = new Mesh[200];
 
-  Vector3[] previousCloud = new Vector3[500];
-  int previousPointCount;
-  Vector3[] concatCloud = new Vector3[65534];
+    const int k_MaxPoints = 1920 ;
+    int[] m_Indices = new int[k_MaxVertices];
 
-  public int concatIndex;
-  
-  void Update()
-  {
-      var pointCloud = m_Reader.pointCloud;
-      //m_Mesh = CreateMesh(pointCloud);
-      if (m_Reader.pointCount != previousPointCount)
+    const int k_MaxVertices = 8192;
+
+    Vector3[] previousCloud = new Vector3[500];
+    int previousPointCount;
+    Vector3[] concatCloud;
+
+    public int concatIndex;
+    public int meshBufferIndex;
+
+    new void Start()
+    {
+      base.Start();
+      if (m_Mesh == null)
+        m_Mesh = GetComponent<MeshFilter>().mesh;
+
+      for (int i = 0; i < k_MaxVertices; i++)
+          m_Indices[i] = i;
+
+      for (int i = 0; i < m_MeshBuffer.Length; i++)
       {
-        if (concatIndex + pointCloud.Length < k_MaxVertices)
+        var obj = new GameObject("mesh points " + i);
+        var meshFilter = obj.AddComponent<MeshFilter>();
+
+        //m_MeshBuffer[i] = new Mesh();
+        meshFilter.mesh = new Mesh();
+        m_MeshBuffer[i] = (Mesh)Instantiate(meshFilter.mesh);
+        m_MeshBuffer[i].vertices = new Vector3[k_MaxVertices];
+        m_MeshBuffer[i].SetIndices(m_Indices, MeshTopology.Points, 0);
+      }
+      concatCloud = m_MeshBuffer[0].vertices;
+    }
+
+    void Update()
+    {
+        var pointCloud = m_Reader.pointCloud;
+        //m_Mesh = CreateMesh(pointCloud);
+        if (m_Reader.pointCount != previousPointCount)
         {
-          pointCloud.CopyTo(concatCloud, concatIndex);
-          concatIndex += m_Reader.pointCount;
-        }
-        else
-        {
-            concatIndex = 0;
+          if (concatIndex + pointCloud.Length < k_MaxVertices)
+          {
             pointCloud.CopyTo(concatCloud, concatIndex);
             concatIndex += m_Reader.pointCount;
+          }
+          else
+          {
+              concatIndex = 0;
+              meshBufferIndex++;
+              concatCloud = m_MeshBuffer[meshBufferIndex].vertices;
+              pointCloud.CopyTo(concatCloud, concatIndex);
+              concatIndex += m_Reader.pointCount;
+          }
         }
-      }
 
-      // TODO - this allocates like hell.  find a better way to do this.
-      m_Mesh.Clear();
-      m_Mesh.vertices = concatCloud;
-      m_Mesh.SetIndices(m_Indices, MeshTopology.Points, 0);
-      previousCloud = pointCloud;
-      previousPointCount = m_Reader.pointCount;
+        // TODO - this allocates like hell.  find a better way to do this.
+        m_Mesh.Clear();
+        m_Mesh.vertices = concatCloud;
+        m_Mesh.SetIndices(m_Indices, MeshTopology.Points, 0);
+        previousCloud = pointCloud;
+        previousPointCount = m_Reader.pointCount;
+    }
+
   }
-
 }
 
