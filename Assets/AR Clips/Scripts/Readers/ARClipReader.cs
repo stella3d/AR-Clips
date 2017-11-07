@@ -9,7 +9,6 @@ namespace ARClips
   {
     // increase this number to slow down playback
     public bool pauseWhenUnfocused = true;
-    public int updatesPerDeviceUpdate;
     public ARClip clip;
 
     [Range(0.0f, 1.0f)]
@@ -79,12 +78,13 @@ namespace ARClips
       timer.Start();
     }
 
-    void FixedUpdate () 
+    void Update () 
     {
       if (updateCount == -1)
       {      
         timer.Reset();
         timer.Start();
+        updateCount++;
       }
 
       editorElapsedSeconds = (double)((double)(timer.ElapsedMilliseconds / (double)1000) + editorTimeOffset);

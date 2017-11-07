@@ -9,16 +9,19 @@ namespace ARClips
         [SerializeField]
         Mesh m_PlaneMesh;
 
+        [SerializeField]
+        ColorPalette m_Palette;
+
         public Material lineMaterial;
         public Vector3[][] m_PlanePoints;
         public List<XRLineRenderer> planeRenderers;
 
-        new void Start()
+        protected override void Start()
         {
             base.Start();
             planeRenderers = new List<XRLineRenderer>();
 
-            for (int i = 2; i < 20; i++)
+            for (int i = 2; i < 14; i++)
             {
                 var obj = new GameObject("plane outline");
                 var render = obj.AddComponent<XRLineRenderer>();
@@ -26,8 +29,10 @@ namespace ARClips
                 render.loop = true;
                 render.SetTotalWidth(0.25f);
                 render.material.SetVector("_lineSettings", new Vector4(0f, 0.05f, 0.1f, 0f));
+                render.material.SetColor("_Color", m_Palette.colors[i-2]);
 
                 var materialCopy = new Material(lineMaterial);
+
                 var color = materialCopy.color;
                 color.r -= i / 4;
                 color.g += i / 6;

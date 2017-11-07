@@ -24,7 +24,7 @@ namespace ARClips
     public int concatIndex;
     public int meshBufferIndex;
 
-    new void Start()
+    protected override void Start()
     {
       base.Start();
       if (m_Mesh == null)
@@ -37,9 +37,11 @@ namespace ARClips
       {
         var obj = new GameObject("mesh points " + i);
         var meshFilter = obj.AddComponent<MeshFilter>();
+        var renderer = obj.AddComponent<MeshRenderer>();
 
         //m_MeshBuffer[i] = new Mesh();
         meshFilter.mesh = new Mesh();
+        meshFilter.mesh.vertices = new Vector3[k_MaxVertices];
         m_MeshBuffer[i] = (Mesh)Instantiate(meshFilter.mesh);
         m_MeshBuffer[i].vertices = new Vector3[k_MaxVertices];
         m_MeshBuffer[i].SetIndices(m_Indices, MeshTopology.Points, 0);
@@ -61,6 +63,9 @@ namespace ARClips
           else
           {
               concatIndex = 0;
+              concatCloud.CopyTo(m_MeshBuffer[meshBufferIndex].vertices, 0);
+              m_MeshBuffer[meshBufferIndex].SetIndices(m_Indices, MeshTopology.Points, 0);
+              
               meshBufferIndex++;
               concatCloud = m_MeshBuffer[meshBufferIndex].vertices;
               pointCloud.CopyTo(concatCloud, concatIndex);

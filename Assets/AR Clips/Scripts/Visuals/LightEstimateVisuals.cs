@@ -10,6 +10,7 @@ namespace ARClips
 
     void Start()
     {
+      base.Start();
       m_Light = GetComponent<Light>();
     }
 

@@ -40,5 +40,18 @@ namespace ARClips
       Selection.activeObject = clip;
     }
 
+    [MenuItem("Assets/Create/Color Palette")]
+    public static void CreateColorPalette()
+    {
+      var palette = ScriptableObject.CreateInstance<ColorPalette> ();
+
+      var path = "Assets/AR Clips/New Color Palette.asset";
+      string assetPathAndName = AssetDatabase.GenerateUniqueAssetPath (path);
+
+      AssetDatabase.CreateAsset (palette, assetPathAndName);
+      AssetDatabase.SaveAssets ();
+      EditorUtility.FocusProjectWindow ();
+    }
+
   }
 }

@@ -21,8 +21,9 @@ namespace ARClips
         public List<MeshRenderer> anchorRenderers;
         public List<GameObject> anchorObjects;
 
-        new void Start()
+        protected override void Start()
         {
+            base.Start();
             anchorObjects = new List<GameObject>();
             anchorRenderers = new List<MeshRenderer>();
         }
